@@ -992,7 +992,7 @@ function PlaceholderVehicle() {
   );
 }
 
-function useCityEnvironment() {
+function useCityEnvironment(isMobileViewport = false) {
   const { scene } = useGLTF(cityModelPath, false, true, extendGltfLoader);
 
   const { cityScenes, segmentLength } = useMemo(() => {
@@ -1001,8 +1001,8 @@ function useCityEnvironment() {
 
       clonedScene.traverse((node) => {
         if (node.isMesh) {
-          node.castShadow = true;
-          node.receiveShadow = true;
+          node.castShadow = !isMobileViewport;
+          node.receiveShadow = !isMobileViewport;
         }
       });
 
@@ -1022,17 +1022,20 @@ function useCityEnvironment() {
       cityScenes: [primaryScene, secondaryScene],
       segmentLength: derivedSegmentLength,
     };
-  }, [scene]);
+  }, [isMobileViewport, scene]);
 
   return { cityScenes, segmentLength };
 }
 
-function RepeatingCityEnvironment({ travelOffset }) {
-  const { cityScenes, segmentLength } = useCityEnvironment();
+function RepeatingCityEnvironment({ travelOffset, isMobileViewport = false }) {
+  const { cityScenes, segmentLength } = useCityEnvironment(isMobileViewport);
   const wrappedOffset = THREE.MathUtils.euclideanModulo(
     travelOffset,
     segmentLength,
   );
+  const trailingOffset = isMobileViewport
+    ? segmentLength * 0.5
+    : segmentLength;
 
   return (
     <>
@@ -1044,14 +1047,16 @@ function RepeatingCityEnvironment({ travelOffset }) {
           cityBasePosition[2] + wrappedOffset,
         ]}
       />
-      <primitive
-        object={cityScenes[1]}
-        position={[
-          cityBasePosition[0],
-          cityBasePosition[1],
-          cityBasePosition[2] - segmentLength + wrappedOffset,
-        ]}
-      />
+      {cityScenes[1] ? (
+        <primitive
+          object={cityScenes[1]}
+          position={[
+            cityBasePosition[0],
+            cityBasePosition[1],
+            cityBasePosition[2] - trailingOffset + wrappedOffset,
+          ]}
+        />
+      ) : null}
     </>
   );
 }
@@ -1381,9 +1386,10 @@ function RoadScene({
         distance={24}
       />
 
-      {!isMobileViewport ? (
-        <RepeatingCityEnvironment travelOffset={travelOffset} />
-      ) : null}
+      <RepeatingCityEnvironment
+        travelOffset={travelOffset}
+        isMobileViewport={isMobileViewport}
+      />
 
       <group ref={worldRef}>
         {allMilestones

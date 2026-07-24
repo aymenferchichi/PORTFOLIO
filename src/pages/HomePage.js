@@ -364,7 +364,7 @@ function HomePage() {
           signalStateById={signalStateById}
         />
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3 pt-24 sm:p-6 sm:pt-6 lg:p-9">
+        <div className="pointer-events-none absolute inset-0 z-[3] flex flex-col justify-between p-3 pt-24 sm:p-6 sm:pt-24 lg:p-9 lg:pt-28">
           <motion.div
             initial={{ opacity: 0, y: -22 }}
             animate={{ opacity: 1, y: 0 }}
@@ -375,6 +375,9 @@ function HomePage() {
             <strong className="mt-2 block text-[0.72rem] uppercase tracking-[0.14em] text-sand-50/92 sm:mt-3 sm:text-sm">
               Scroll the road or jump straight to the work.
             </strong>
+            <p className="mt-3 mb-0 text-[0.68rem] leading-5 text-sand-100/72 sm:hidden">
+              Use a PC for the smoothest and most complete experience.
+            </p>
           </motion.div>
 
           <div className="mt-auto hidden justify-start pb-16 sm:flex sm:pb-0">
