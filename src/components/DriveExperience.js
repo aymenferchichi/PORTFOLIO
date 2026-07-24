@@ -13,8 +13,11 @@ import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
 import { buildJourneyScene } from "../data/journeyData";
 
-const cityModelPath = "/models/city.glb";
-const carModelPath = "/models/car.glb";
+const publicAssetBase = process.env.PUBLIC_URL || "";
+const resolvePublicAssetPath = (assetPath) =>
+  `${publicAssetBase}${assetPath}`;
+const cityModelPath = resolvePublicAssetPath("/models/city.glb");
+const carModelPath = resolvePublicAssetPath("/models/car.glb");
 const environmentFiles = [
   "/textures/env/px.svg",
   "/textures/env/nx.svg",
@@ -22,8 +25,8 @@ const environmentFiles = [
   "/textures/env/ny.svg",
   "/textures/env/pz.svg",
   "/textures/env/nz.svg",
-];
-const textFontPath = "/fonts/franklin-gothic-regular.ttf";
+].map(resolvePublicAssetPath);
+const textFontPath = resolvePublicAssetPath("/fonts/franklin-gothic-regular.ttf");
 const cityBasePosition = [0, 0, -80];
 const cityRotation = [0, -Math.PI / 2, 0];
 const cityScale = 0.7;
@@ -1519,6 +1522,6 @@ function DriveExperience({
 
 useGLTF.preload(cityModelPath);
 useGLTF.preload(carModelPath);
-useGLTF.setDecoderPath("/draco/");
+useGLTF.setDecoderPath(resolvePublicAssetPath("/draco/"));
 
 export default DriveExperience;
