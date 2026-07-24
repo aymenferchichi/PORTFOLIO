@@ -63,9 +63,11 @@ function AppLayout() {
               aria-label="Primary"
             >
               <NavLink className="flex min-w-0 items-center gap-4" to="/">
-                <span className="grid h-11 w-11 place-items-center rounded-[16px] bg-gradient-to-br from-brand-100 to-brand-300 font-display text-[0.72rem] tracking-[0.28em] text-ink-900 sm:h-14 sm:w-14 sm:rounded-[20px] sm:text-sm sm:tracking-[0.3em]">
-                  AF
-                </span>
+                <img
+                  className="h-11 w-11 rounded-[16px] object-cover sm:h-14 sm:w-14 sm:rounded-[20px]"
+                  src={process.env.PUBLIC_URL + "/logo.png"}
+                  alt="Aymen Ferchichi logo"
+                />
                 <div className="min-w-0">
                   <p className="truncate text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-sand-50 sm:text-sm">
                     Aymen Ferchichi
