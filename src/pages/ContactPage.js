@@ -7,6 +7,7 @@ import {
   fieldClassName,
   primaryButtonClassName,
 } from "../components/SitePrimitives";
+import { buildApiUrl } from "../config/api";
 
 const contactOptions = [
   {
@@ -37,9 +38,6 @@ const initialFormData = {
   message: "",
 };
 
-const apiBaseUrl =
-  process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000/api";
-
 function ContactPage() {
   const [formData, setFormData] = useState(initialFormData);
   const [submitState, setSubmitState] = useState({ type: "idle", message: "" });
@@ -60,7 +58,7 @@ function ContactPage() {
     setSubmitState({ type: "idle", message: "" });
 
     try {
-      const response = await fetch(`${apiBaseUrl}/contacts/`, {
+      const response = await fetch(buildApiUrl("/contacts/"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,4 @@
-const apiBaseUrl =
-  process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000/api";
+import { buildApiUrl } from "../config/api";
 
 const defaultRepeatCount = 1;
 const journeyXPositions = [-4.8, 4.8];
@@ -53,7 +52,7 @@ export async function fetchJourneyEntries() {
   }
 
   try {
-    const response = await fetch(`${apiBaseUrl}/journeys/`);
+    const response = await fetch(buildApiUrl("/journeys/"));
 
     if (!response.ok) {
       throw new Error("Unable to load journeys.");
@@ -76,7 +75,7 @@ export async function fetchJourneyEntry(slug) {
   }
 
   try {
-    const response = await fetch(`${apiBaseUrl}/journeys/${slug}/`);
+    const response = await fetch(buildApiUrl(`/journeys/${slug}/`));
 
     if (response.status === 404) {
       return null;

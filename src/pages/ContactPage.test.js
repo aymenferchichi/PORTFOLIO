@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { buildApiUrl } from "../config/api";
 import ContactPage from "./ContactPage";
 
 test("renders the contact form fields", () => {
@@ -43,7 +44,7 @@ test("submits contact form data to the configured api", async () => {
     await screen.findByText(/your message has been sent/i),
   ).toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith(
-    "http://127.0.0.1:8000/api/contacts/",
+    buildApiUrl("/contacts/"),
     expect.objectContaining({ method: "POST" }),
   );
 });
