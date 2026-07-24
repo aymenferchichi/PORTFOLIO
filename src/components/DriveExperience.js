@@ -1033,9 +1033,7 @@ function RepeatingCityEnvironment({ travelOffset, isMobileViewport = false }) {
     travelOffset,
     segmentLength,
   );
-  const trailingOffset = isMobileViewport
-    ? segmentLength * 0.5
-    : segmentLength;
+  const trailingOffset = isMobileViewport ? segmentLength * 0.5 : segmentLength;
 
   return (
     <>
@@ -1359,7 +1357,10 @@ function RoadScene({
         position={cardLayout.cameraPosition}
         fov={cardLayout.cameraFov}
       />
-      <ambientLight intensity={isMobileViewport ? 1.45 : 1.25} color="#edf4ff" />
+      <ambientLight
+        intensity={isMobileViewport ? 1.45 : 1.25}
+        color="#edf4ff"
+      />
       <hemisphereLight
         intensity={isMobileViewport ? 0.55 : 0.9}
         groundColor="#22262b"
@@ -1532,7 +1533,8 @@ function SceneLoader() {
           boxShadow: "0 20px 50px rgba(0, 0, 0, 0.28)",
           color: "#f5f9ff",
           textAlign: "center",
-          fontFamily: '"Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif',
+          fontFamily:
+            '"Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif',
         }}
       >
         <div
@@ -1583,7 +1585,9 @@ function DriveExperience({
   return (
     <>
       <style>
-        {"@keyframes drive-loader-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }"}
+        {
+          "@keyframes drive-loader-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }"
+        }
       </style>
       <Canvas
         dpr={canvasDpr}
