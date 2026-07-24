@@ -2,6 +2,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Environment,
+  Html,
   PerspectiveCamera,
   RoundedBox,
   Sky,
@@ -15,8 +16,7 @@ import { DRACOLoader } from "three-stdlib";
 import { buildJourneyScene } from "../data/journeyData";
 
 const publicAssetBase = process.env.PUBLIC_URL || "";
-const resolvePublicAssetPath = (assetPath) =>
-  `${publicAssetBase}${assetPath}`;
+const resolvePublicAssetPath = (assetPath) => `${publicAssetBase}${assetPath}`;
 const cityModelPath = resolvePublicAssetPath("/models/city.glb.txt");
 const carModelPath = resolvePublicAssetPath("/models/car.glb.txt");
 const dracoDecoderPath = resolvePublicAssetPath("/draco/");
@@ -28,7 +28,9 @@ const environmentFiles = [
   "/textures/env/pz.svg",
   "/textures/env/nz.svg",
 ].map(resolvePublicAssetPath);
-const textFontPath = resolvePublicAssetPath("/fonts/franklin-gothic-regular.ttf");
+const textFontPath = resolvePublicAssetPath(
+  "/fonts/franklin-gothic-regular.ttf",
+);
 const extendGltfLoader = (loader) => {
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath(dracoDecoderPath);
@@ -1498,6 +1500,51 @@ function RoadScene({
   );
 }
 
+function SceneLoader() {
+  return (
+    <Html center>
+      <div
+        style={{
+          minWidth: "220px",
+          padding: "16px 18px",
+          borderRadius: "18px",
+          border: "1px solid rgba(255,255,255,0.14)",
+          background: "rgba(10, 17, 24, 0.82)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 20px 50px rgba(0, 0, 0, 0.28)",
+          color: "#f5f9ff",
+          textAlign: "center",
+          fontFamily: '"Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif',
+        }}
+      >
+        <div
+          style={{
+            width: "36px",
+            height: "36px",
+            margin: "0 auto 12px",
+            borderRadius: "999px",
+            border: "3px solid rgba(255,255,255,0.18)",
+            borderTopColor: "#7fd1ff",
+            animation: "drive-loader-spin 0.9s linear infinite",
+          }}
+        />
+        <div
+          style={{
+            fontSize: "0.78rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+          }}
+        >
+          Loading scene
+        </div>
+        <div style={{ marginTop: "6px", fontSize: "0.9rem", opacity: 0.78 }}>
+          Preparing models and road signs...
+        </div>
+      </div>
+    </Html>
+  );
+}
+
 function DriveExperience({
   progress,
   sceneData,
@@ -1511,20 +1558,35 @@ function DriveExperience({
   }
 
   const resolvedSceneData = sceneData || buildJourneyScene([], 1);
+  const isMobileViewport =
+    typeof window !== "undefined" ? window.innerWidth < 640 : false;
+  const canvasDpr = isMobileViewport ? [1, 1.05] : [1, 1.25];
 
   return (
-    <Canvas dpr={[1, 1.35]} shadows gl={{ antialias: true }}>
-      <Suspense fallback={null}>
-        <RoadScene
-          progress={progress}
-          sceneData={resolvedSceneData}
-          reducedMotion={reducedMotion}
-          onImpact={onImpact}
-          activeStopId={activeStopId}
-          signalStateById={signalStateById}
-        />
-      </Suspense>
-    </Canvas>
+    <>
+      <style>
+        {"@keyframes drive-loader-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }"}
+      </style>
+      <Canvas
+        dpr={canvasDpr}
+        shadows={!isMobileViewport}
+        gl={{
+          antialias: !isMobileViewport,
+          powerPreference: "high-performance",
+        }}
+      >
+        <Suspense fallback={<SceneLoader />}>
+          <RoadScene
+            progress={progress}
+            sceneData={resolvedSceneData}
+            reducedMotion={reducedMotion}
+            onImpact={onImpact}
+            activeStopId={activeStopId}
+            signalStateById={signalStateById}
+          />
+        </Suspense>
+      </Canvas>
+    </>
   );
 }
 
