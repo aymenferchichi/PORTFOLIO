@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="zenith" cx="50%" cy="52%" r="58%">
+      <stop offset="0%" stop-color="#b9dcff"/>
+      <stop offset="38%" stop-color="#8db6e4"/>
+      <stop offset="74%" stop-color="#5e87bd"/>
+      <stop offset="100%" stop-color="#35527d"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#zenith)"/>
+  <circle cx="686" cy="376" r="118" fill="#fff7d8" opacity="0.55"/>
+  <circle cx="686" cy="376" r="184" fill="#fff7d8" opacity="0.12"/>
+</svg>
