@@ -1329,49 +1329,61 @@ function RoadScene({
     <>
       <color attach="background" args={["#7ea8d1"]} />
       <fog attach="fog" args={["#7f9db8", 46, 190]} />
-      <AtmosphereDome />
-      <Sky
-        distance={450000}
-        sunPosition={[14, 11, -10]}
-        inclination={0.49}
-        azimuth={0.22}
-        mieCoefficient={0.0018}
-        mieDirectionalG={0.8}
-        rayleigh={2.6}
-        turbidity={2.6}
-      />
-      <Environment
-        files={environmentFiles}
-        background={false}
-        environmentIntensity={environmentIntensity}
-      />
+      {!isMobileViewport ? <AtmosphereDome /> : null}
+      {!isMobileViewport ? (
+        <Sky
+          distance={450000}
+          sunPosition={[14, 11, -10]}
+          inclination={0.49}
+          azimuth={0.22}
+          mieCoefficient={0.0018}
+          mieDirectionalG={0.8}
+          rayleigh={2.6}
+          turbidity={2.6}
+        />
+      ) : null}
+      {!isMobileViewport ? (
+        <Environment
+          files={environmentFiles}
+          background={false}
+          environmentIntensity={environmentIntensity}
+        />
+      ) : null}
       <PerspectiveCamera
         makeDefault
         position={cardLayout.cameraPosition}
         fov={cardLayout.cameraFov}
       />
-      <ambientLight intensity={1.25} color="#edf4ff" />
-      <hemisphereLight intensity={0.9} groundColor="#22262b" color="#d6e7fb" />
+      <ambientLight intensity={isMobileViewport ? 1.45 : 1.25} color="#edf4ff" />
+      <hemisphereLight
+        intensity={isMobileViewport ? 0.55 : 0.9}
+        groundColor="#22262b"
+        color="#d6e7fb"
+      />
       <directionalLight
-        intensity={2.15}
+        intensity={isMobileViewport ? 1.35 : 2.15}
         color="#f6f9ff"
         position={[12, 16, 8]}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={isMobileViewport ? 512 : 1024}
+        shadow-mapSize-height={isMobileViewport ? 512 : 1024}
       />
-      <directionalLight
-        intensity={0.85}
-        color="#bdd7ff"
-        position={[-10, 8, 14]}
-      />
+      {!isMobileViewport ? (
+        <directionalLight
+          intensity={0.85}
+          color="#bdd7ff"
+          position={[-10, 8, 14]}
+        />
+      ) : null}
       <pointLight
-        intensity={0.75}
+        intensity={isMobileViewport ? 0.45 : 0.75}
         color="#d9e8ff"
         position={[0, 4, 6]}
         distance={24}
       />
 
-      <RepeatingCityEnvironment travelOffset={travelOffset} />
+      {!isMobileViewport ? (
+        <RepeatingCityEnvironment travelOffset={travelOffset} />
+      ) : null}
 
       <group ref={worldRef}>
         {allMilestones
