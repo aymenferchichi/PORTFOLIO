@@ -11,13 +11,15 @@ import {
 } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
+import { DRACOLoader } from "three-stdlib";
 import { buildJourneyScene } from "../data/journeyData";
 
 const publicAssetBase = process.env.PUBLIC_URL || "";
 const resolvePublicAssetPath = (assetPath) =>
   `${publicAssetBase}${assetPath}`;
-const cityModelPath = resolvePublicAssetPath("/models/city.glb");
-const carModelPath = resolvePublicAssetPath("/models/car.glb");
+const cityModelPath = resolvePublicAssetPath("/models/city.glb.txt");
+const carModelPath = resolvePublicAssetPath("/models/car.glb.txt");
+const dracoDecoderPath = resolvePublicAssetPath("/draco/");
 const environmentFiles = [
   "/textures/env/px.svg",
   "/textures/env/nx.svg",
@@ -27,6 +29,12 @@ const environmentFiles = [
   "/textures/env/nz.svg",
 ].map(resolvePublicAssetPath);
 const textFontPath = resolvePublicAssetPath("/fonts/franklin-gothic-regular.ttf");
+const extendGltfLoader = (loader) => {
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath(dracoDecoderPath);
+  dracoLoader.setDecoderConfig({ type: "js" });
+  loader.setDRACOLoader(dracoLoader);
+};
 const cityBasePosition = [0, 0, -80];
 const cityRotation = [0, -Math.PI / 2, 0];
 const cityScale = 0.7;
@@ -946,7 +954,7 @@ function ImpactRebuildBurst({ impact, onComplete, positionOverride }) {
 }
 
 function PlaceholderVehicle() {
-  const { scene } = useGLTF(carModelPath);
+  const { scene } = useGLTF(carModelPath, false, true, extendGltfLoader);
 
   const carScene = useMemo(() => {
     const clonedScene = scene.clone(true);
@@ -983,7 +991,7 @@ function PlaceholderVehicle() {
 }
 
 function useCityEnvironment() {
-  const { scene } = useGLTF(cityModelPath);
+  const { scene } = useGLTF(cityModelPath, false, true, extendGltfLoader);
 
   const { cityScenes, segmentLength } = useMemo(() => {
     const createCityScene = () => {
@@ -1520,8 +1528,7 @@ function DriveExperience({
   );
 }
 
-useGLTF.preload(cityModelPath);
-useGLTF.preload(carModelPath);
-useGLTF.setDecoderPath(resolvePublicAssetPath("/draco/"));
+useGLTF.preload(cityModelPath, false, true, extendGltfLoader);
+useGLTF.preload(carModelPath, false, true, extendGltfLoader);
 
 export default DriveExperience;
