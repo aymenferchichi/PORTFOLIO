@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Environment,
   Html,
+  PerformanceMonitor,
   PerspectiveCamera,
   RoundedBox,
   Sky,
@@ -58,6 +59,7 @@ function detectSceneProfile() {
     return {
       isMobileViewport: false,
       isLowPerformanceViewport: false,
+      qualityTier: 0,
     };
   }
 
@@ -77,10 +79,18 @@ function detectSceneProfile() {
     ((typeof deviceMemory === "number" && deviceMemory <= 8) ||
       (typeof hardwareConcurrency === "number" && hardwareConcurrency <= 8));
 
+  const isLowPerformanceViewport =
+    isMobileViewport || hasConstrainedHardware || hasMidRangeLaptopHardware;
+
   return {
     isMobileViewport,
-    isLowPerformanceViewport:
-      isMobileViewport || hasConstrainedHardware || hasMidRangeLaptopHardware,
+    isLowPerformanceViewport,
+    qualityTier:
+      isMobileViewport || hasConstrainedHardware
+        ? 2
+        : isLowPerformanceViewport
+          ? 1
+          : 0,
   };
 }
 
@@ -1059,7 +1069,11 @@ function useCityEnvironment(useCompactScene = false) {
   return { cityScenes, segmentLength };
 }
 
-function RepeatingCityEnvironment({ travelOffset, useCompactScene = false }) {
+function RepeatingCityEnvironment({
+  travelOffset,
+  useCompactScene = false,
+  useSingleSegment = false,
+}) {
   const { cityScenes, segmentLength } = useCityEnvironment(useCompactScene);
   const wrappedOffset = THREE.MathUtils.euclideanModulo(
     travelOffset,
@@ -1077,7 +1091,7 @@ function RepeatingCityEnvironment({ travelOffset, useCompactScene = false }) {
           cityBasePosition[2] + wrappedOffset,
         ]}
       />
-      {cityScenes[1] ? (
+      {cityScenes[1] && !useSingleSegment ? (
         <primitive
           object={cityScenes[1]}
           position={[
@@ -1125,7 +1139,7 @@ function RoadScene({
   reducedMotion = false,
   onImpact,
   signalStateById = {},
-  lowPerformanceMode = false,
+  qualityTier = 0,
 }) {
   const navigate = useNavigate();
   const worldRef = useRef(null);
@@ -1140,7 +1154,8 @@ function RoadScene({
   const impactTimeoutsRef = useRef([]);
   const previousTravelOffsetRef = useRef(travelOffset);
   const isMobileViewport = size.width < 640;
-  const useCompactScene = isMobileViewport || lowPerformanceMode;
+  const useBalancedScene = isMobileViewport || qualityTier >= 1;
+  const useCompactScene = isMobileViewport || qualityTier >= 2;
   const cardLayout = isMobileViewport ? mobileCardLayout : desktopCardLayout;
 
   useEffect(() => {
@@ -1193,7 +1208,7 @@ function RoadScene({
         0.08,
       );
 
-      if (useCompactScene) {
+      if (useBalancedScene) {
         previousTravelOffsetRef.current = travelOffset;
         return;
       }
@@ -1396,10 +1411,7 @@ function RoadScene({
         position={cardLayout.cameraPosition}
         fov={cardLayout.cameraFov}
       />
-      <ambientLight
-        intensity={useCompactScene ? 1.2 : 1.25}
-        color="#edf4ff"
-      />
+      <ambientLight intensity={useCompactScene ? 1.2 : 1.25} color="#edf4ff" />
       <hemisphereLight
         intensity={useCompactScene ? 0.42 : 0.9}
         groundColor="#22262b"
@@ -1429,6 +1441,7 @@ function RoadScene({
       <RepeatingCityEnvironment
         travelOffset={travelOffset}
         useCompactScene={useCompactScene}
+        useSingleSegment={qualityTier >= 2}
       />
 
       <group ref={worldRef}>
@@ -1613,6 +1626,7 @@ function DriveExperience({
   signalStateById,
 }) {
   const [sceneProfile, setSceneProfile] = useState(() => detectSceneProfile());
+  const [adaptiveQualityPenalty, setAdaptiveQualityPenalty] = useState(0);
 
   useEffect(() => {
     const updateSceneProfile = () => {
@@ -1632,8 +1646,10 @@ function DriveExperience({
   }
 
   const resolvedSceneData = sceneData || buildJourneyScene([], 1);
-  const { isLowPerformanceViewport } = sceneProfile;
-  const canvasDpr = isLowPerformanceViewport ? [0.75, 0.9] : [1, 1.25];
+  const baseQualityTier = sceneProfile.qualityTier;
+  const qualityTier = Math.min(baseQualityTier + adaptiveQualityPenalty, 2);
+  const canvasDpr =
+    qualityTier >= 2 ? [0.72, 0.86] : qualityTier === 1 ? [0.85, 1] : [1, 1.18];
 
   return (
     <>
@@ -1644,15 +1660,28 @@ function DriveExperience({
       </style>
       <Canvas
         dpr={canvasDpr}
-        shadows={!isLowPerformanceViewport}
+        shadows={qualityTier === 0}
+        performance={{ min: 0.5 }}
         gl={{
-          antialias: !isLowPerformanceViewport,
+          antialias: qualityTier === 0,
           alpha: false,
           stencil: false,
+          depth: true,
           powerPreference: "high-performance",
         }}
       >
         <Suspense fallback={<SceneLoader />}>
+          <PerformanceMonitor
+            flipflops={2}
+            onDecline={() => {
+              setAdaptiveQualityPenalty((current) =>
+                Math.min(current + 1, Math.max(0, 2 - baseQualityTier)),
+              );
+            }}
+            onIncline={() => {
+              setAdaptiveQualityPenalty((current) => Math.max(current - 1, 0));
+            }}
+          />
           <RoadScene
             progress={progress}
             sceneData={resolvedSceneData}
@@ -1660,7 +1689,7 @@ function DriveExperience({
             onImpact={onImpact}
             activeStopId={activeStopId}
             signalStateById={signalStateById}
-            lowPerformanceMode={isLowPerformanceViewport}
+            qualityTier={qualityTier}
           />
         </Suspense>
       </Canvas>

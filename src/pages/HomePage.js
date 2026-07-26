@@ -232,7 +232,9 @@ function HomePage() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let frameId = null;
+
+    const updateScrollProgress = () => {
       if (!heroRef.current) {
         return;
       }
@@ -328,13 +330,30 @@ function HomePage() {
       setProgress(nextProgress);
     };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
+    const scheduleScrollUpdate = () => {
+      if (frameId !== null) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = null;
+        updateScrollProgress();
+      });
+    };
+
+    scheduleScrollUpdate();
+    window.addEventListener("scroll", scheduleScrollUpdate, {
+      passive: true,
+    });
+    window.addEventListener("resize", scheduleScrollUpdate);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("scroll", scheduleScrollUpdate);
+      window.removeEventListener("resize", scheduleScrollUpdate);
     };
   }, [firstMilestoneId, lastMilestoneId, sceneData]);
 
@@ -373,7 +392,8 @@ function HomePage() {
           >
             <Eyebrow>Interactive portfolio</Eyebrow>
             <strong className="mt-2 block text-[0.72rem] uppercase tracking-[0.14em] text-sand-50/92 sm:mt-3 sm:text-sm">
-              Design-led freelance work, selected client chapters, and the thinking behind them.
+              Design-led freelance work, selected client chapters, and the
+              thinking behind them.
             </strong>
             <p className="mt-3 mb-0 text-[0.68rem] leading-5 text-sand-100/72 sm:hidden">
               Use a PC for the smoothest and most complete experience.
@@ -411,7 +431,9 @@ function HomePage() {
 
               <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:gap-4 sm:pt-5">
                 <p className="m-0 text-sm leading-6 text-sand-100/68 sm:text-base sm:leading-8">
-                  Each stop shows how delivery, interface craft, and client-facing design decisions evolved into a more premium freelance offer.
+                  Each stop shows how delivery, interface craft, and
+                  client-facing design decisions evolved into a more premium
+                  freelance offer.
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
                   <div className="rounded-[18px] border border-white/8 bg-white/[0.03] p-3 sm:rounded-[22px] sm:p-4">

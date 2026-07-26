@@ -70,7 +70,8 @@ function AboutPage() {
               <div className="space-y-4">
                 <Eyebrow>Profile</Eyebrow>
                 <h2 className="max-w-[14ch] font-display text-[clamp(2.6rem,5vw,4.6rem)] leading-[0.95] tracking-[-0.04em] text-sand-50">
-                  I help client work feel more directed, more refined, and more commercially credible.
+                  I help client work feel more directed, more refined, and more
+                  commercially credible.
                 </h2>
               </div>
 
@@ -120,9 +121,8 @@ function AboutPage() {
               <p className="mt-5 text-base leading-8 text-sand-100/72">
                 I treat projects like connected systems. Interface, typography,
                 motion, layout, messaging, and delivery expectations should all
-                push in the same direction. When they do, the work feels
-                calmer, sharper, and more trustworthy to the client as well as
-                the user.
+                push in the same direction. When they do, the work feels calmer,
+                sharper, and more trustworthy to the client as well as the user.
               </p>
             </Surface>
           </Reveal>

@@ -66,7 +66,8 @@ function JourneyDetailPage() {
     );
   }
 
-  const chapterLabel = entry.subcategory === "projects" ? "Project" : "Experience";
+  const chapterLabel =
+    entry.subcategory === "projects" ? "Project" : "Experience";
 
   return (
     <section className="space-y-10 pt-6 lg:space-y-14">

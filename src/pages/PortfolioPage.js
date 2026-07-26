@@ -100,7 +100,8 @@ function PortfolioPage() {
             <div className="space-y-4">
               <Eyebrow>Positioning</Eyebrow>
               <h2 className="max-w-[15ch] font-display text-[clamp(2.4rem,4.8vw,4.6rem)] leading-[0.96] tracking-[-0.04em] text-sand-50">
-                Work that helps clients look clearer, sharper, and more valuable.
+                Work that helps clients look clearer, sharper, and more
+                valuable.
               </h2>
               <p className="max-w-[40ch] text-base leading-8 text-sand-100/72">
                 This portfolio is aimed at client-facing work: premium websites,
@@ -183,8 +184,7 @@ function PortfolioPage() {
             <p className="mt-4 max-w-[44ch] text-base leading-8 text-sand-100/70">
               The new <strong className="text-sand-50">projects</strong>{" "}
               subcategory is now available in Django admin. Add freelance case
-              studies there and they will show up in this section
-              automatically.
+              studies there and they will show up in this section automatically.
             </p>
           </Surface>
         )}
