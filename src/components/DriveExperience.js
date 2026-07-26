@@ -18,8 +18,8 @@ import { buildJourneyScene } from "../data/journeyData";
 
 const publicAssetBase = process.env.PUBLIC_URL || "";
 const resolvePublicAssetPath = (assetPath) => `${publicAssetBase}${assetPath}`;
-const cityModelPath = resolvePublicAssetPath("/models/city.glb.txt");
-const carModelPath = resolvePublicAssetPath("/models/car.glb.txt");
+const cityModelPath = resolvePublicAssetPath("/models/city.glb");
+const carModelPath = resolvePublicAssetPath("/models/car.glb");
 const dracoDecoderPath = resolvePublicAssetPath("/draco/");
 const environmentFiles = [
   "/textures/env/px.svg",
@@ -55,6 +55,27 @@ const collisionReleaseMargin = 0.26;
 const signalLeadDistance = 0.08;
 const visibleSceneFrontZ = 18;
 const visibleSceneBackZ = -132;
+const cityFloorPattern = /(road|floor|ground|street|highway|lane|base)/i;
+
+function isCityFloorMesh(node) {
+  return cityFloorPattern.test(node.name || "");
+}
+
+function createLambertCityMaterial(material) {
+  const lambertMaterial = new THREE.MeshLambertMaterial({
+    color: material.color ? material.color.clone() : new THREE.Color("#ffffff"),
+    map: material.map || null,
+    transparent: Boolean(material.transparent),
+    opacity: typeof material.opacity === "number" ? material.opacity : 1,
+    side: material.side,
+  });
+
+  if ("alphaTest" in material) {
+    lambertMaterial.alphaTest = material.alphaTest;
+  }
+
+  return lambertMaterial;
+}
 
 function detectSceneProfile() {
   if (typeof window === "undefined") {
@@ -1021,8 +1042,9 @@ function PlaceholderVehicle() {
   );
 }
 
-function useCityEnvironment(useCompactScene = false) {
+function useCityEnvironment(qualityTier = 0) {
   const { scene } = useGLTF(cityModelPath, false, true, extendGltfLoader);
+  const useCompactScene = qualityTier >= 2;
 
   const { cityScenes, segmentLength } = useMemo(() => {
     const createCityScene = () => {
@@ -1030,8 +1052,71 @@ function useCityEnvironment(useCompactScene = false) {
 
       clonedScene.traverse((node) => {
         if (node.isMesh) {
-          node.castShadow = !useCompactScene;
-          node.receiveShadow = !useCompactScene;
+          const shouldReceiveShadow = isCityFloorMesh(node) && !useCompactScene;
+
+          node.castShadow = false;
+          node.receiveShadow = shouldReceiveShadow;
+
+          if (Array.isArray(node.material)) {
+            node.material = node.material.map((material) => {
+              if (
+                material?.isMeshStandardMaterial ||
+                material?.isMeshPhysicalMaterial
+              ) {
+                return createLambertCityMaterial(material);
+              }
+
+              return material;
+            });
+          } else if (
+            node.material?.isMeshStandardMaterial ||
+            node.material?.isMeshPhysicalMaterial
+          ) {
+            node.material = createLambertCityMaterial(node.material);
+          }
+
+          if (qualityTier >= 1) {
+            if (node.geometry) {
+              if (!node.geometry.boundingSphere) {
+                node.geometry.computeBoundingSphere();
+              }
+
+              const detailRadius = node.geometry.boundingSphere?.radius ?? 1;
+
+              if (qualityTier >= 2 && detailRadius < 0.18) {
+                node.visible = false;
+                return;
+              }
+            }
+
+            const materials = Array.isArray(node.material)
+              ? node.material
+              : node.material
+                ? [node.material]
+                : [];
+
+            materials.forEach((material) => {
+              if (!material) {
+                return;
+              }
+
+              if ("envMapIntensity" in material) {
+                material.envMapIntensity = qualityTier >= 2 ? 0.05 : 0.12;
+              }
+
+              if ("metalness" in material) {
+                material.metalness = Math.min(material.metalness, 0.08);
+              }
+
+              if ("roughness" in material) {
+                material.roughness = Math.max(material.roughness, 0.92);
+              }
+
+              if ("toneMapped" in material) {
+                material.toneMapped = true;
+              }
+            });
+          }
         }
       });
 
@@ -1051,22 +1136,23 @@ function useCityEnvironment(useCompactScene = false) {
       cityScenes: [primaryScene, secondaryScene],
       segmentLength: derivedSegmentLength,
     };
-  }, [scene, useCompactScene]);
+  }, [qualityTier, scene, useCompactScene]);
 
   return { cityScenes, segmentLength };
 }
 
 function RepeatingCityEnvironment({
   travelOffset,
-  useCompactScene = false,
+  qualityTier = 0,
   useSingleSegment = false,
 }) {
-  const { cityScenes, segmentLength } = useCityEnvironment(useCompactScene);
+  const useCompactScene = qualityTier >= 2;
+  const { cityScenes, segmentLength } = useCityEnvironment(qualityTier);
   const wrappedOffset = THREE.MathUtils.euclideanModulo(
     travelOffset,
     segmentLength,
   );
-  const trailingOffset = useCompactScene ? segmentLength * 0.5 : segmentLength;
+  const trailingOffset = useCompactScene ? segmentLength * 0.72 : segmentLength;
 
   return (
     <>
@@ -1088,93 +1174,6 @@ function RepeatingCityEnvironment({
           ]}
         />
       ) : null}
-    </>
-  );
-}
-
-function SimplifiedCityBackdrop({ travelOffset, qualityTier = 1 }) {
-  const buildingCount = qualityTier >= 2 ? 12 : 18;
-  const segmentLength = 160;
-  const buildingDummy = useMemo(() => new THREE.Object3D(), []);
-  const skylineBlueprints = useMemo(() => {
-    const randomSource = createSeededRandom(90210 + qualityTier * 77);
-
-    return Array.from({ length: buildingCount }, (_, index) => {
-      const laneSide = index % 2 === 0 ? -1 : 1;
-      const width = randomBetweenWithSource(randomSource, 5.5, 11.5);
-      const depth = randomBetweenWithSource(randomSource, 5, 10);
-      const height = randomBetweenWithSource(
-        randomSource,
-        qualityTier >= 2 ? 16 : 18,
-        qualityTier >= 2 ? 34 : 44,
-      );
-      const z = -18 - index * (segmentLength / buildingCount);
-      const x = laneSide * randomBetweenWithSource(randomSource, 22, 34);
-
-      return {
-        position: [x, height * 0.5 - 2, z],
-        scale: [width, height, depth],
-        color: new THREE.Color(
-          laneSide > 0 ? "#7a8da0" : qualityTier >= 2 ? "#627586" : "#70869b",
-        ),
-      };
-    });
-  }, [buildingCount, qualityTier]);
-  const primarySkylineRef = useRef(null);
-  const secondarySkylineRef = useRef(null);
-  const wrappedOffset = THREE.MathUtils.euclideanModulo(
-    travelOffset,
-    segmentLength,
-  );
-
-  useEffect(() => {
-    [primarySkylineRef, secondarySkylineRef].forEach((meshRef) => {
-      if (!meshRef.current) {
-        return;
-      }
-
-      skylineBlueprints.forEach((building, index) => {
-        buildingDummy.position.set(...building.position);
-        buildingDummy.scale.set(...building.scale);
-        buildingDummy.rotation.set(0, 0, 0);
-        buildingDummy.updateMatrix();
-        meshRef.current.setMatrixAt(index, buildingDummy.matrix);
-        meshRef.current.setColorAt(index, building.color);
-      });
-
-      meshRef.current.instanceMatrix.needsUpdate = true;
-
-      if (meshRef.current.instanceColor) {
-        meshRef.current.instanceColor.needsUpdate = true;
-      }
-    });
-  }, [buildingDummy, skylineBlueprints]);
-
-  return (
-    <>
-      {[0, 1].map((segmentIndex) => (
-        <group
-          key={segmentIndex}
-          position={[
-            0,
-            0,
-            cityBasePosition[2] + wrappedOffset - segmentIndex * segmentLength,
-          ]}
-        >
-          <instancedMesh
-            ref={segmentIndex === 0 ? primarySkylineRef : secondarySkylineRef}
-            args={[null, null, skylineBlueprints.length]}
-          >
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial
-              vertexColors
-              roughness={0.94}
-              metalness={0.04}
-              envMapIntensity={0.2}
-            />
-          </instancedMesh>
-        </group>
-      ))}
     </>
   );
 }
@@ -1500,8 +1499,8 @@ function RoadScene({
         intensity={useCompactScene ? 1.1 : 2.15}
         color="#f6f9ff"
         position={[12, 16, 8]}
-        shadow-mapSize-width={useCompactScene ? 512 : 1024}
-        shadow-mapSize-height={useCompactScene ? 512 : 1024}
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
       />
       {!useCompactScene ? (
         <directionalLight
@@ -1517,18 +1516,11 @@ function RoadScene({
         distance={24}
       />
 
-      {qualityTier === 0 ? (
-        <RepeatingCityEnvironment
-          travelOffset={travelOffset}
-          useCompactScene={useCompactScene}
-          useSingleSegment={qualityTier >= 2}
-        />
-      ) : (
-        <SimplifiedCityBackdrop
-          travelOffset={travelOffset}
-          qualityTier={qualityTier}
-        />
-      )}
+      <RepeatingCityEnvironment
+        travelOffset={travelOffset}
+        qualityTier={qualityTier}
+        useSingleSegment={qualityTier >= 2}
+      />
 
       <group ref={worldRef}>
         {visibleMilestones
@@ -1738,12 +1730,16 @@ function DriveExperience({
   const resolvedSceneData = sceneData || buildJourneyScene([], 1);
   const baseQualityTier = sceneProfile.qualityTier;
   const qualityTier = Math.min(baseQualityTier + adaptiveQualityPenalty, 2);
+  const cappedPixelRatio =
+    typeof window !== "undefined"
+      ? Math.min(window.devicePixelRatio || 1, 1.5)
+      : 1;
   const canvasDpr =
     qualityTier >= 2
-      ? [0.72, 0.86]
+      ? Math.min(cappedPixelRatio, 0.9)
       : qualityTier === 1
-        ? [0.85, 1]
-        : [0.92, 1.08];
+        ? Math.min(cappedPixelRatio, 1)
+        : cappedPixelRatio;
 
   return (
     <>
