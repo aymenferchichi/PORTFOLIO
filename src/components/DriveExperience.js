@@ -18,8 +18,8 @@ import { buildJourneyScene } from "../data/journeyData";
 
 const publicAssetBase = process.env.PUBLIC_URL || "";
 const resolvePublicAssetPath = (assetPath) => `${publicAssetBase}${assetPath}`;
-const cityModelPath = resolvePublicAssetPath("/models/city.glb");
-const carModelPath = resolvePublicAssetPath("/models/car.glb");
+const cityModelPath = resolvePublicAssetPath("/models/city.glb.txt");
+const carModelPath = resolvePublicAssetPath("/models/car.glb.txt");
 const dracoDecoderPath = resolvePublicAssetPath("/draco/");
 const environmentFiles = [
   "/textures/env/px.svg",

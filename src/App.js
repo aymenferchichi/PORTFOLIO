@@ -30,6 +30,21 @@ function getNavLinkClassName(isActive) {
   );
 }
 
+function ScrollToTop() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.history.scrollRestoration = "manual";
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname]);
+
+  return null;
+}
+
 function AppLayout() {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
@@ -41,6 +56,7 @@ function AppLayout() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-shell-gradient text-sand-50">
+      <ScrollToTop />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.07),transparent_25%),radial-gradient(circle_at_80%_20%,rgba(109,143,132,0.14),transparent_22%)]" />
       {!isHomePage ? (
         <>
