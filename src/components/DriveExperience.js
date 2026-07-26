@@ -53,44 +53,28 @@ const dustLifetime = 0.48;
 const rebuildLifetime = 0.82;
 const collisionReleaseMargin = 0.26;
 const signalLeadDistance = 0.08;
+const visibleSceneFrontZ = 18;
+const visibleSceneBackZ = -132;
 
 function detectSceneProfile() {
   if (typeof window === "undefined") {
     return {
       isMobileViewport: false,
-      isLowPerformanceViewport: false,
       qualityTier: 0,
     };
   }
 
   const width = window.innerWidth;
-  const height = window.innerHeight;
-  const pixelRatio = window.devicePixelRatio || 1;
   const deviceMemory = window.navigator?.deviceMemory;
   const hardwareConcurrency = window.navigator?.hardwareConcurrency;
   const isMobileViewport = width < 640;
-  const isCompactLaptopViewport = width <= 1536 && height <= 960;
   const hasConstrainedHardware =
     (typeof deviceMemory === "number" && deviceMemory <= 4) ||
     (typeof hardwareConcurrency === "number" && hardwareConcurrency <= 4);
-  const hasMidRangeLaptopHardware =
-    isCompactLaptopViewport &&
-    pixelRatio > 1 &&
-    ((typeof deviceMemory === "number" && deviceMemory <= 8) ||
-      (typeof hardwareConcurrency === "number" && hardwareConcurrency <= 8));
-
-  const isLowPerformanceViewport =
-    isMobileViewport || hasConstrainedHardware || hasMidRangeLaptopHardware;
 
   return {
     isMobileViewport,
-    isLowPerformanceViewport,
-    qualityTier:
-      isMobileViewport || hasConstrainedHardware
-        ? 2
-        : isLowPerformanceViewport
-          ? 1
-          : 0,
+    qualityTier: isMobileViewport ? 2 : hasConstrainedHardware ? 1 : 0,
   };
 }
 
@@ -387,6 +371,7 @@ function MilestoneCard({
   opacity = 1,
   positionOverride,
   interactive = true,
+  compactText = false,
 }) {
   useCursor(isHovered);
   const cardLift = isActive ? 0.2 : 0;
@@ -586,19 +571,21 @@ function MilestoneCard({
       >
         {milestone.title}
       </Text>
-      <Text
-        position={[topTextLeft, detailY, 0.24]}
-        anchorX="left"
-        anchorY="middle"
-        font={textFontPath}
-        fontSize={layout.detailFontSize}
-        lineHeight={1.4}
-        color={isActive ? "#eff7ff" : "#dceaf7"}
-        maxWidth={layout.maxWidth * 0.92}
-        fillOpacity={opacity}
-      >
-        {milestone.detail}
-      </Text>
+      {!compactText ? (
+        <Text
+          position={[topTextLeft, detailY, 0.24]}
+          anchorX="left"
+          anchorY="middle"
+          font={textFontPath}
+          fontSize={layout.detailFontSize}
+          lineHeight={1.4}
+          color={isActive ? "#eff7ff" : "#dceaf7"}
+          maxWidth={layout.maxWidth * 0.92}
+          fillOpacity={opacity}
+        >
+          {milestone.detail}
+        </Text>
+      ) : null}
     </group>
   );
 }
@@ -1105,6 +1092,93 @@ function RepeatingCityEnvironment({
   );
 }
 
+function SimplifiedCityBackdrop({ travelOffset, qualityTier = 1 }) {
+  const buildingCount = qualityTier >= 2 ? 12 : 18;
+  const segmentLength = 160;
+  const buildingDummy = useMemo(() => new THREE.Object3D(), []);
+  const skylineBlueprints = useMemo(() => {
+    const randomSource = createSeededRandom(90210 + qualityTier * 77);
+
+    return Array.from({ length: buildingCount }, (_, index) => {
+      const laneSide = index % 2 === 0 ? -1 : 1;
+      const width = randomBetweenWithSource(randomSource, 5.5, 11.5);
+      const depth = randomBetweenWithSource(randomSource, 5, 10);
+      const height = randomBetweenWithSource(
+        randomSource,
+        qualityTier >= 2 ? 16 : 18,
+        qualityTier >= 2 ? 34 : 44,
+      );
+      const z = -18 - index * (segmentLength / buildingCount);
+      const x = laneSide * randomBetweenWithSource(randomSource, 22, 34);
+
+      return {
+        position: [x, height * 0.5 - 2, z],
+        scale: [width, height, depth],
+        color: new THREE.Color(
+          laneSide > 0 ? "#7a8da0" : qualityTier >= 2 ? "#627586" : "#70869b",
+        ),
+      };
+    });
+  }, [buildingCount, qualityTier]);
+  const primarySkylineRef = useRef(null);
+  const secondarySkylineRef = useRef(null);
+  const wrappedOffset = THREE.MathUtils.euclideanModulo(
+    travelOffset,
+    segmentLength,
+  );
+
+  useEffect(() => {
+    [primarySkylineRef, secondarySkylineRef].forEach((meshRef) => {
+      if (!meshRef.current) {
+        return;
+      }
+
+      skylineBlueprints.forEach((building, index) => {
+        buildingDummy.position.set(...building.position);
+        buildingDummy.scale.set(...building.scale);
+        buildingDummy.rotation.set(0, 0, 0);
+        buildingDummy.updateMatrix();
+        meshRef.current.setMatrixAt(index, buildingDummy.matrix);
+        meshRef.current.setColorAt(index, building.color);
+      });
+
+      meshRef.current.instanceMatrix.needsUpdate = true;
+
+      if (meshRef.current.instanceColor) {
+        meshRef.current.instanceColor.needsUpdate = true;
+      }
+    });
+  }, [buildingDummy, skylineBlueprints]);
+
+  return (
+    <>
+      {[0, 1].map((segmentIndex) => (
+        <group
+          key={segmentIndex}
+          position={[
+            0,
+            0,
+            cityBasePosition[2] + wrappedOffset - segmentIndex * segmentLength,
+          ]}
+        >
+          <instancedMesh
+            ref={segmentIndex === 0 ? primarySkylineRef : secondarySkylineRef}
+            args={[null, null, skylineBlueprints.length]}
+          >
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial
+              vertexColors
+              roughness={0.94}
+              metalness={0.04}
+              envMapIntensity={0.2}
+            />
+          </instancedMesh>
+        </group>
+      ))}
+    </>
+  );
+}
+
 function AtmosphereDome() {
   const uniforms = useMemo(
     () => ({
@@ -1156,7 +1230,12 @@ function RoadScene({
   const isMobileViewport = size.width < 640;
   const useBalancedScene = isMobileViewport || qualityTier >= 1;
   const useCompactScene = isMobileViewport || qualityTier >= 2;
+  const useCompactText = qualityTier >= 2;
   const cardLayout = isMobileViewport ? mobileCardLayout : desktopCardLayout;
+  const visibleMilestones = allMilestones.filter((milestone) => {
+    const cardWorldZ = milestone.position[2] + travelOffset;
+    return cardWorldZ <= visibleSceneFrontZ && cardWorldZ >= visibleSceneBackZ;
+  });
 
   useEffect(() => {
     setImpactStates([]);
@@ -1438,14 +1517,21 @@ function RoadScene({
         distance={24}
       />
 
-      <RepeatingCityEnvironment
-        travelOffset={travelOffset}
-        useCompactScene={useCompactScene}
-        useSingleSegment={qualityTier >= 2}
-      />
+      {qualityTier === 0 ? (
+        <RepeatingCityEnvironment
+          travelOffset={travelOffset}
+          useCompactScene={useCompactScene}
+          useSingleSegment={qualityTier >= 2}
+        />
+      ) : (
+        <SimplifiedCityBackdrop
+          travelOffset={travelOffset}
+          qualityTier={qualityTier}
+        />
+      )}
 
       <group ref={worldRef}>
-        {allMilestones
+        {visibleMilestones
           .filter((milestone) => milestone.id !== lastMilestoneId)
           .map((milestone) => (
             <RoadSignal
@@ -1456,7 +1542,7 @@ function RoadScene({
             />
           ))}
 
-        {allMilestones
+        {visibleMilestones
           .filter((milestone) => !hiddenMilestoneIds.has(milestone.id))
           .map((milestone) => (
             <MilestoneCard
@@ -1465,6 +1551,7 @@ function RoadScene({
               isActive={hoveredMilestone === milestone.id}
               isHovered={hoveredMilestone === milestone.id}
               layout={cardLayout}
+              compactText={useCompactText}
               onHover={(hovered) => () => {
                 setHoveredMilestone(hovered ? milestone.id : null);
               }}
@@ -1483,6 +1570,7 @@ function RoadScene({
               isActive={false}
               isHovered={false}
               layout={impact.layout}
+              compactText={useCompactText}
               positionOverride={impact.localPosition}
               interactive={false}
               onHover={() => () => {}}
@@ -1510,6 +1598,7 @@ function RoadScene({
               isActive={false}
               isHovered={false}
               layout={impact.layout}
+              compactText={useCompactText}
               positionOverride={impact.localPosition}
               interactive={false}
               onHover={() => () => {}}
@@ -1527,6 +1616,7 @@ function RoadScene({
               isActive={false}
               isHovered={false}
               layout={impact.layout}
+              compactText={useCompactText}
               positionOverride={impact.worldPosition}
               interactive={false}
               onHover={() => () => {}}
@@ -1649,7 +1739,11 @@ function DriveExperience({
   const baseQualityTier = sceneProfile.qualityTier;
   const qualityTier = Math.min(baseQualityTier + adaptiveQualityPenalty, 2);
   const canvasDpr =
-    qualityTier >= 2 ? [0.72, 0.86] : qualityTier === 1 ? [0.85, 1] : [1, 1.18];
+    qualityTier >= 2
+      ? [0.72, 0.86]
+      : qualityTier === 1
+        ? [0.85, 1]
+        : [0.92, 1.08];
 
   return (
     <>
@@ -1661,7 +1755,7 @@ function DriveExperience({
       <Canvas
         dpr={canvasDpr}
         shadows={qualityTier === 0}
-        performance={{ min: 0.5 }}
+        performance={{ min: 0.5, debounce: 200 }}
         gl={{
           antialias: qualityTier === 0,
           alpha: false,
@@ -1673,6 +1767,7 @@ function DriveExperience({
         <Suspense fallback={<SceneLoader />}>
           <PerformanceMonitor
             flipflops={2}
+            bounds={() => [45, 58]}
             onDecline={() => {
               setAdaptiveQualityPenalty((current) =>
                 Math.min(current + 1, Math.max(0, 2 - baseQualityTier)),
