@@ -180,8 +180,8 @@ function AppLayout() {
                 Available for selected freelance work
               </p>
               <h2 className="max-w-[12ch] font-display text-[clamp(2rem,9vw,5rem)] leading-[0.96] tracking-[-0.04em] text-sand-50">
-                Design systems, premium web experiences, and visuals that feel
-                directed.
+                Premium websites, design direction, and digital surfaces that
+                help clients look more credible.
               </h2>
             </div>
 
@@ -194,8 +194,9 @@ function AppLayout() {
                 <ArrowUpRight size={16} />
               </a>
               <p className="m-0 max-w-[28ch] leading-7">
-                Built around clarity, craft, and a stronger visual point of view
-                from first impression to final delivery.
+                Built around clarity, visual discipline, and the kind of
+                delivery clients can trust from first impression to final
+                handoff.
               </p>
             </div>
           </div>

@@ -52,6 +52,38 @@ const dustLifetime = 0.48;
 const rebuildLifetime = 0.82;
 const collisionReleaseMargin = 0.26;
 const signalLeadDistance = 0.08;
+
+function detectSceneProfile() {
+  if (typeof window === "undefined") {
+    return {
+      isMobileViewport: false,
+      isLowPerformanceViewport: false,
+    };
+  }
+
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const pixelRatio = window.devicePixelRatio || 1;
+  const deviceMemory = window.navigator?.deviceMemory;
+  const hardwareConcurrency = window.navigator?.hardwareConcurrency;
+  const isMobileViewport = width < 640;
+  const isCompactLaptopViewport = width <= 1536 && height <= 960;
+  const hasConstrainedHardware =
+    (typeof deviceMemory === "number" && deviceMemory <= 4) ||
+    (typeof hardwareConcurrency === "number" && hardwareConcurrency <= 4);
+  const hasMidRangeLaptopHardware =
+    isCompactLaptopViewport &&
+    pixelRatio > 1 &&
+    ((typeof deviceMemory === "number" && deviceMemory <= 8) ||
+      (typeof hardwareConcurrency === "number" && hardwareConcurrency <= 8));
+
+  return {
+    isMobileViewport,
+    isLowPerformanceViewport:
+      isMobileViewport || hasConstrainedHardware || hasMidRangeLaptopHardware,
+  };
+}
+
 const desktopCardLayout = {
   scale: 1,
   xOffsetMultiplier: 0,
@@ -992,7 +1024,7 @@ function PlaceholderVehicle() {
   );
 }
 
-function useCityEnvironment(isMobileViewport = false) {
+function useCityEnvironment(useCompactScene = false) {
   const { scene } = useGLTF(cityModelPath, false, true, extendGltfLoader);
 
   const { cityScenes, segmentLength } = useMemo(() => {
@@ -1001,8 +1033,8 @@ function useCityEnvironment(isMobileViewport = false) {
 
       clonedScene.traverse((node) => {
         if (node.isMesh) {
-          node.castShadow = !isMobileViewport;
-          node.receiveShadow = !isMobileViewport;
+          node.castShadow = !useCompactScene;
+          node.receiveShadow = !useCompactScene;
         }
       });
 
@@ -1022,18 +1054,18 @@ function useCityEnvironment(isMobileViewport = false) {
       cityScenes: [primaryScene, secondaryScene],
       segmentLength: derivedSegmentLength,
     };
-  }, [isMobileViewport, scene]);
+  }, [scene, useCompactScene]);
 
   return { cityScenes, segmentLength };
 }
 
-function RepeatingCityEnvironment({ travelOffset, isMobileViewport = false }) {
-  const { cityScenes, segmentLength } = useCityEnvironment(isMobileViewport);
+function RepeatingCityEnvironment({ travelOffset, useCompactScene = false }) {
+  const { cityScenes, segmentLength } = useCityEnvironment(useCompactScene);
   const wrappedOffset = THREE.MathUtils.euclideanModulo(
     travelOffset,
     segmentLength,
   );
-  const trailingOffset = isMobileViewport ? segmentLength * 0.5 : segmentLength;
+  const trailingOffset = useCompactScene ? segmentLength * 0.5 : segmentLength;
 
   return (
     <>
@@ -1093,6 +1125,7 @@ function RoadScene({
   reducedMotion = false,
   onImpact,
   signalStateById = {},
+  lowPerformanceMode = false,
 }) {
   const navigate = useNavigate();
   const worldRef = useRef(null);
@@ -1107,6 +1140,7 @@ function RoadScene({
   const impactTimeoutsRef = useRef([]);
   const previousTravelOffsetRef = useRef(travelOffset);
   const isMobileViewport = size.width < 640;
+  const useCompactScene = isMobileViewport || lowPerformanceMode;
   const cardLayout = isMobileViewport ? mobileCardLayout : desktopCardLayout;
 
   useEffect(() => {
@@ -1158,6 +1192,11 @@ function RoadScene({
         travelOffset,
         0.08,
       );
+
+      if (useCompactScene) {
+        previousTravelOffsetRef.current = travelOffset;
+        return;
+      }
 
       const isReversing = travelOffset < previousTravelOffsetRef.current;
       const isAdvancing = travelOffset > previousTravelOffsetRef.current;
@@ -1332,8 +1371,8 @@ function RoadScene({
     <>
       <color attach="background" args={["#7ea8d1"]} />
       <fog attach="fog" args={["#7f9db8", 46, 190]} />
-      {!isMobileViewport ? <AtmosphereDome /> : null}
-      {!isMobileViewport ? (
+      {!useCompactScene ? <AtmosphereDome /> : null}
+      {!useCompactScene ? (
         <Sky
           distance={450000}
           sunPosition={[14, 11, -10]}
@@ -1345,7 +1384,7 @@ function RoadScene({
           turbidity={2.6}
         />
       ) : null}
-      {!isMobileViewport ? (
+      {!useCompactScene ? (
         <Environment
           files={environmentFiles}
           background={false}
@@ -1358,22 +1397,22 @@ function RoadScene({
         fov={cardLayout.cameraFov}
       />
       <ambientLight
-        intensity={isMobileViewport ? 1.45 : 1.25}
+        intensity={useCompactScene ? 1.2 : 1.25}
         color="#edf4ff"
       />
       <hemisphereLight
-        intensity={isMobileViewport ? 0.55 : 0.9}
+        intensity={useCompactScene ? 0.42 : 0.9}
         groundColor="#22262b"
         color="#d6e7fb"
       />
       <directionalLight
-        intensity={isMobileViewport ? 1.35 : 2.15}
+        intensity={useCompactScene ? 1.1 : 2.15}
         color="#f6f9ff"
         position={[12, 16, 8]}
-        shadow-mapSize-width={isMobileViewport ? 512 : 1024}
-        shadow-mapSize-height={isMobileViewport ? 512 : 1024}
+        shadow-mapSize-width={useCompactScene ? 512 : 1024}
+        shadow-mapSize-height={useCompactScene ? 512 : 1024}
       />
-      {!isMobileViewport ? (
+      {!useCompactScene ? (
         <directionalLight
           intensity={0.85}
           color="#bdd7ff"
@@ -1381,7 +1420,7 @@ function RoadScene({
         />
       ) : null}
       <pointLight
-        intensity={isMobileViewport ? 0.45 : 0.75}
+        intensity={useCompactScene ? 0.3 : 0.75}
         color="#d9e8ff"
         position={[0, 4, 6]}
         distance={24}
@@ -1389,7 +1428,7 @@ function RoadScene({
 
       <RepeatingCityEnvironment
         travelOffset={travelOffset}
-        isMobileViewport={isMobileViewport}
+        useCompactScene={useCompactScene}
       />
 
       <group ref={worldRef}>
@@ -1573,14 +1612,28 @@ function DriveExperience({
   activeStopId,
   signalStateById,
 }) {
+  const [sceneProfile, setSceneProfile] = useState(() => detectSceneProfile());
+
+  useEffect(() => {
+    const updateSceneProfile = () => {
+      setSceneProfile(detectSceneProfile());
+    };
+
+    updateSceneProfile();
+    window.addEventListener("resize", updateSceneProfile);
+
+    return () => {
+      window.removeEventListener("resize", updateSceneProfile);
+    };
+  }, []);
+
   if (process.env.NODE_ENV === "test") {
     return <div className="drive-stage-fallback" aria-label="3d drive stage" />;
   }
 
   const resolvedSceneData = sceneData || buildJourneyScene([], 1);
-  const isMobileViewport =
-    typeof window !== "undefined" ? window.innerWidth < 640 : false;
-  const canvasDpr = isMobileViewport ? [1, 1.05] : [1, 1.25];
+  const { isLowPerformanceViewport } = sceneProfile;
+  const canvasDpr = isLowPerformanceViewport ? [0.75, 0.9] : [1, 1.25];
 
   return (
     <>
@@ -1591,9 +1644,11 @@ function DriveExperience({
       </style>
       <Canvas
         dpr={canvasDpr}
-        shadows={!isMobileViewport}
+        shadows={!isLowPerformanceViewport}
         gl={{
-          antialias: !isMobileViewport,
+          antialias: !isLowPerformanceViewport,
+          alpha: false,
+          stencil: false,
           powerPreference: "high-performance",
         }}
       >
@@ -1605,6 +1660,7 @@ function DriveExperience({
             onImpact={onImpact}
             activeStopId={activeStopId}
             signalStateById={signalStateById}
+            lowPerformanceMode={isLowPerformanceViewport}
           />
         </Suspense>
       </Canvas>

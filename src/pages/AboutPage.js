@@ -11,36 +11,39 @@ import {
 } from "../components/SitePrimitives";
 
 const strengths = [
-  "Product-minded UI design with sharper hierarchy and cleaner flows.",
-  "Front-end implementation that respects typography, motion, and responsive rhythm.",
-  "Brand systems that stay coherent across web, social, and campaign assets.",
-  "Video edits that support the message instead of overwhelming it.",
+  "Client-ready UI direction with stronger hierarchy, clearer pacing, and a more premium visual finish.",
+  "Front-end implementation that protects typography, motion, and responsive behavior instead of flattening the design.",
+  "Operational awareness shaped by delivery leadership, client escalation handling, and team coordination.",
+  "Brand and motion work that supports positioning across websites, campaigns, and supporting assets.",
 ];
 
 const process = [
   {
     title: "Discover",
-    text: "Clarify the goal, audience, and tone before any layout, motion, or visual choices are locked in.",
+    text: "Clarify the client goal, audience, and conversion pressure before any layout, motion, or visual direction is locked in.",
   },
   {
     title: "Design",
-    text: "Shape a direction with stronger hierarchy, tighter pacing, and a look that feels authored rather than assembled.",
+    text: "Shape a direction with stronger hierarchy, tighter pacing, and a web presence that feels authored rather than assembled.",
   },
   {
     title: "Deliver",
-    text: "Turn the concept into production-ready interfaces, visuals, and edits with consistent finish quality.",
+    text: "Turn the concept into production-ready interfaces, visuals, and edits with the discipline needed for real delivery.",
   },
 ];
 
 const profileFacts = [
-  { label: "Primary edge", value: "Design sense grounded in implementation" },
+  {
+    label: "Primary edge",
+    value: "Design direction grounded in hands-on delivery",
+  },
   {
     label: "Best fit",
-    value: "Brands and products that need a cleaner premium presence",
+    value: "Founders, brands, and teams that need a sharper premium presence",
   },
   {
     label: "Working style",
-    value: "Structured, visually exact, and detail-aware",
+    value: "Structured, client-aware, and visually exact",
   },
 ];
 
@@ -49,8 +52,8 @@ function AboutPage() {
     <section className="space-y-10 pt-6 lg:space-y-14">
       <SectionHeading
         eyebrow="About"
-        title="One practice built around authorship, precision, and execution."
-        description="I work across interface design, front-end systems, brand visuals, and motion. That range matters because it keeps one visual idea coherent from the opening impression to the final asset."
+        title="A freelance practice built around design direction, delivery discipline, and cleaner digital presentation."
+        description="I work across UI/UX direction, front-end systems, brand visuals, and delivery operations. That range matters because clients do not experience those pieces separately; they experience one surface, one story, and one level of finish."
         aside={
           <div className="flex flex-wrap justify-start gap-3 lg:justify-end">
             <Pill>UI direction</Pill>
@@ -67,8 +70,7 @@ function AboutPage() {
               <div className="space-y-4">
                 <Eyebrow>Profile</Eyebrow>
                 <h2 className="max-w-[14ch] font-display text-[clamp(2.6rem,5vw,4.6rem)] leading-[0.95] tracking-[-0.04em] text-sand-50">
-                  I build digital identities that feel more directed, more
-                  refined, and more credible.
+                  I help client work feel more directed, more refined, and more commercially credible.
                 </h2>
               </div>
 
@@ -117,9 +119,10 @@ function AboutPage() {
               <Eyebrow>How I think</Eyebrow>
               <p className="mt-5 text-base leading-8 text-sand-100/72">
                 I treat projects like connected systems. Interface, typography,
-                motion, layout, and messaging should all push in the same
-                direction. When they do, the work feels calmer, sharper, and
-                more trustworthy.
+                motion, layout, messaging, and delivery expectations should all
+                push in the same direction. When they do, the work feels
+                calmer, sharper, and more trustworthy to the client as well as
+                the user.
               </p>
             </Surface>
           </Reveal>
@@ -148,7 +151,8 @@ function AboutPage() {
             <Eyebrow>Approach</Eyebrow>
             <p className="max-w-[44ch] text-xl leading-9 text-sand-100/75">
               The goal is not a louder interface. It is a more exact one, where
-              hierarchy, restraint, and movement all reinforce the same story.
+              hierarchy, restraint, motion, and implementation quality all
+              reinforce the same client story.
             </p>
           </div>
 

@@ -10,17 +10,18 @@ const journeySetGap = 18;
 export const finalJourneyEntry = {
   slug: "next-chapter",
   year: "Next",
-  title: "The next chapter starts here",
-  eyebrow: "Forward view",
+  title: "The next chapter is more selective",
+  eyebrow: "Freelance direction",
+  subcategory: "experience",
   detail:
-    "A stronger portfolio, sharper product thinking, and more ambitious interactive work are the next stretch of the road.",
+    "The next step is a more focused freelance practice built around premium web presentation, clearer client positioning, and carefully directed digital experiences.",
   accent: "#f3d9a2",
   summary:
-    "The final card marks the next step: turning the current visual direction into deeper case studies, stronger systems, and more ambitious digital experiences.",
+    "The final card points toward a more design-led client offer: stronger case studies, sharper positioning, and selected projects that feel commercially useful as well as visually refined.",
   focus: [
-    "Detailed case studies that show decisions, not just outcomes.",
-    "More advanced interactive surfaces built with restraint.",
-    "A portfolio that positions the work at a more premium level.",
+    "Detailed client case studies with stronger before-and-after clarity.",
+    "More selective freelance work across web design, front-end, and creative direction.",
+    "A portfolio that sells trust, craft, and delivery discipline more clearly.",
   ],
 };
 
@@ -30,6 +31,7 @@ function normalizeJourneyEntry(entry, index) {
     year: entry.year,
     title: entry.title,
     eyebrow: entry.eyebrow,
+    subcategory: entry.subcategory || "experience",
     detail: entry.detail,
     summary: entry.summary,
     focus: Array.isArray(entry.focus) ? entry.focus : [],

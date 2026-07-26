@@ -12,22 +12,22 @@ import { buildApiUrl } from "../config/api";
 const contactOptions = [
   {
     title: "Email",
-    text: "Use this for project inquiries, freelance requests, or collaborations when you want a direct reply.",
+    text: "Use this for freelance inquiries, website redesign requests, product interface help, or visual direction when you want a direct reply.",
     action: "mailto:aymenferchichi1305@gmail.com",
     label: "aymenferchichi1305@gmail.com",
   },
   {
     title: "Availability",
-    text: "Best suited for brands, founders, and teams who want both design direction and execution.",
+    text: "Best suited for founders, brands, and teams who need both design direction and dependable front-end delivery.",
     action: "mailto:aymenferchichi1305@gmail.com?subject=New%20Project",
     label: "Freelance and collaboration friendly",
   },
 ];
 
 const responseDetails = [
-  "Best for portfolio websites, landing pages, and visual refresh work",
-  "Useful if you need both design direction and front-end execution",
-  "Typical replies can include scope, timing, and the most effective format for the project",
+  "Best for premium portfolio websites, landing pages, and visual refresh work",
+  "Useful when the project needs both design direction and front-end execution",
+  "Replies usually clarify scope, timing, and the most effective structure for the work",
 ];
 
 const initialFormData = {
@@ -102,8 +102,8 @@ function ContactPage() {
     <section className="space-y-10 pt-6 lg:space-y-14">
       <SectionHeading
         eyebrow="Contact"
-        title="Ready when the project needs polish, direction, and a more premium surface."
-        description="Use the form for portfolio sites, product interfaces, brand visuals, or campaign edits. The message is stored by the backend and delivered directly through the Django API."
+        title="Ready for freelance work that needs sharper design, cleaner delivery, and a more premium digital surface."
+        description="Use the form for portfolio websites, product interfaces, landing pages, brand visuals, or campaign support. The message is stored by the backend and delivered directly through the Django API."
       />
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(300px,0.88fr)]">
@@ -115,8 +115,8 @@ function ContactPage() {
                 Project inquiry form
               </h2>
               <p className="max-w-[34ch] text-base leading-8 text-sand-100/70">
-                Share the goal, timeline, and the level of polish you are aiming
-                for.
+                Share the goal, timeline, audience, and the level of polish you
+                are aiming for.
               </p>
             </div>
 

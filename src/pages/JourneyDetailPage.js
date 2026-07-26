@@ -66,6 +66,8 @@ function JourneyDetailPage() {
     );
   }
 
+  const chapterLabel = entry.subcategory === "projects" ? "Project" : "Experience";
+
   return (
     <section className="space-y-10 pt-6 lg:space-y-14">
       <SectionHeading
@@ -84,10 +86,10 @@ function JourneyDetailPage() {
           <Surface className="overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(241,211,160,0.15),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))]">
             <div className="space-y-4">
               <p className="m-0 text-[0.78rem] uppercase tracking-[0.18em] text-sand-100/48">
-                Journey overview
+                {chapterLabel} overview
               </p>
               <span className="inline-flex min-h-9 items-center rounded-full border border-white/10 bg-ink-900/42 px-3 text-xs uppercase tracking-[0.18em] text-sand-100/72">
-                Chapter{" "}
+                {chapterLabel}{" "}
                 {typeof entry.display_order === "number"
                   ? String(entry.display_order).padStart(2, "0")
                   : "Next"}
@@ -108,12 +110,10 @@ function JourneyDetailPage() {
         >
           <Surface className="bg-ink-900/44 p-5 sm:p-6">
             <span className="block text-[0.72rem] uppercase tracking-[0.18em] text-sand-100/46">
-              Chapter
+              Type
             </span>
             <strong className="mt-3 block text-3xl text-sand-50">
-              {typeof entry.display_order === "number"
-                ? String(entry.display_order).padStart(2, "0")
-                : "Next"}
+              {chapterLabel}
             </strong>
           </Surface>
           <Surface className="bg-ink-900/44 p-5 sm:p-6">

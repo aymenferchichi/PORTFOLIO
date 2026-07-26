@@ -373,7 +373,7 @@ function HomePage() {
           >
             <Eyebrow>Interactive portfolio</Eyebrow>
             <strong className="mt-2 block text-[0.72rem] uppercase tracking-[0.14em] text-sand-50/92 sm:mt-3 sm:text-sm">
-              Scroll the road or jump straight to the work.
+              Design-led freelance work, selected client chapters, and the thinking behind them.
             </strong>
             <p className="mt-3 mb-0 text-[0.68rem] leading-5 text-sand-100/72 sm:hidden">
               Use a PC for the smoothest and most complete experience.
@@ -411,8 +411,7 @@ function HomePage() {
 
               <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:gap-4 sm:pt-5">
                 <p className="m-0 text-sm leading-6 text-sand-100/68 sm:text-base sm:leading-8">
-                  Every stop opens a deeper project chapter with context,
-                  decisions, and the thinking behind the work.
+                  Each stop shows how delivery, interface craft, and client-facing design decisions evolved into a more premium freelance offer.
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
                   <div className="rounded-[18px] border border-white/8 bg-white/[0.03] p-3 sm:rounded-[22px] sm:p-4">
@@ -428,7 +427,7 @@ function HomePage() {
                       Focus
                     </span>
                     <strong className="mt-1.5 block text-sm leading-5 text-sand-50 sm:mt-2 sm:text-lg sm:leading-7">
-                      Case studies, interaction, and premium presentation
+                      Freelance positioning, UI direction, and premium delivery
                     </strong>
                   </div>
                 </div>

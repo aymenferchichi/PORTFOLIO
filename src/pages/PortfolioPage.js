@@ -11,24 +11,24 @@ import {
 import { fetchJourneyEntries } from "../data/journeyData";
 
 const capabilities = [
-  "Creative direction",
-  "Visual systems",
-  "Responsive development",
-  "Motion editing",
+  "UI / UX direction",
+  "Responsive front-end execution",
+  "Brand and campaign visuals",
+  "Motion and presentation polish",
 ];
 
 const engagementModes = [
   {
-    title: "Premium portfolio builds",
-    text: "For founders and creatives who need a site that positions them more clearly and more confidently.",
+    title: "Premium websites and portfolios",
+    text: "For founders, consultants, and creatives who need a site that sells credibility more clearly.",
   },
   {
-    title: "Product interface refreshes",
-    text: "For teams that need navigation, hierarchy, and system design to feel more intentional.",
+    title: "Product and marketing interface refreshes",
+    text: "For teams that need hierarchy, flow, and visual finish to feel more intentional and more useful.",
   },
   {
-    title: "Campaign visual systems",
-    text: "For launches that need web, social, and motion assets to feel like one authored release.",
+    title: "Campaign and launch support",
+    text: "For brands that need web, social, and motion assets to land as one coherent release.",
   },
 ];
 
@@ -61,26 +61,37 @@ function PortfolioPage() {
     };
   }, []);
 
+  const experienceEntries = useMemo(
+    () => journeys.filter((entry) => entry.subcategory !== "projects"),
+    [journeys],
+  );
+  const projectEntries = useMemo(
+    () => journeys.filter((entry) => entry.subcategory === "projects"),
+    [journeys],
+  );
+
   const featuredProjects = useMemo(
     () =>
-      journeys.slice(0, 3).map((entry) => ({
-        slug: entry.slug,
-        name: entry.title,
-        discipline: entry.eyebrow,
-        outcome: formatJourneyOutcome(entry),
-        detail: entry.detail,
-        accent: entry.accent,
-        year: entry.year,
-      })),
-    [journeys],
+      (projectEntries.length > 0 ? projectEntries : experienceEntries)
+        .slice(0, 3)
+        .map((entry) => ({
+          slug: entry.slug,
+          name: entry.title,
+          discipline: entry.eyebrow,
+          outcome: formatJourneyOutcome(entry),
+          detail: entry.detail,
+          accent: entry.accent,
+          year: entry.year,
+        })),
+    [experienceEntries, projectEntries],
   );
 
   return (
     <section className="space-y-10 pt-6 lg:space-y-14">
       <SectionHeading
         eyebrow="Portfolio"
-        title="Selected work across products, premium websites, brand systems, and motion."
-        description="Each case-study block is now driven by the same journey data powering the interactive road, so the portfolio story stays consistent across the site instead of drifting into placeholder copy."
+        title="Selected freelance work, delivery chapters, and project-ready design direction."
+        description="The portfolio is structured around real journey data from the backend so experience chapters, future projects, and case-study details all stay connected instead of drifting into disconnected presentation copy."
       />
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)]">
@@ -89,13 +100,12 @@ function PortfolioPage() {
             <div className="space-y-4">
               <Eyebrow>Positioning</Eyebrow>
               <h2 className="max-w-[15ch] font-display text-[clamp(2.4rem,4.8vw,4.6rem)] leading-[0.96] tracking-[-0.04em] text-sand-50">
-                Work that stays visually disciplined even when the medium
-                changes.
+                Work that helps clients look clearer, sharper, and more valuable.
               </h2>
               <p className="max-w-[40ch] text-base leading-8 text-sand-100/72">
-                Each project block now points back to a real journey milestone,
-                showing how product thinking, interface craft, and visual
-                direction evolved into the current premium portfolio approach.
+                This portfolio is aimed at client-facing work: premium websites,
+                interface direction, visual systems, and presentation surfaces
+                that need both design sense and dependable execution.
               </p>
             </div>
 
@@ -114,48 +124,121 @@ function PortfolioPage() {
               ))}
             </div>
             <p className="text-base leading-8 text-sand-100/68">
-              The same system can cover landing pages, portfolio positioning,
-              product marketing surfaces, and lightweight motion storytelling.
+              The same practice can cover premium portfolio websites,
+              conversion-aware landing pages, product marketing surfaces, and
+              motion-supported visual storytelling.
             </p>
           </Surface>
         </Reveal>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        {featuredProjects.map((project, index) => (
-          <Reveal key={project.name} delay={0.06 + index * 0.05}>
-            <Surface className="relative h-full overflow-hidden">
-              <div
-                className="pointer-events-none absolute right-[-2rem] top-[-1rem] h-36 w-36 rounded-full blur-3xl"
-                style={{ backgroundColor: `${project.accent}24` }}
-              />
-              <Eyebrow>{project.discipline}</Eyebrow>
-              <h3 className="mt-4 font-display text-3xl leading-tight tracking-[-0.03em] text-sand-50">
-                {project.name}
-              </h3>
-              <span className="mt-3 inline-flex min-h-8 items-center rounded-full border border-white/10 px-3 text-xs uppercase tracking-[0.16em] text-sand-100/56">
-                {project.year}
-              </span>
-              <strong className="mt-4 block text-base font-semibold leading-7 text-sand-50">
-                {project.outcome}
-              </strong>
-              <p className="mt-4 text-base leading-8 text-sand-100/70">
-                {project.detail}
-              </p>
-              <Link
-                className="mt-6 inline-flex text-sm uppercase tracking-[0.16em] text-brand-100 transition hover:text-sand-50"
-                to={`/journey/${project.slug}`}
-              >
-                Read the full chapter
-              </Link>
-            </Surface>
-          </Reveal>
-        ))}
+      <div className="space-y-4">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <Eyebrow>Projects</Eyebrow>
+            <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3.3rem)] leading-[0.98] tracking-[-0.04em] text-sand-50">
+              Client projects and selected build work.
+            </h2>
+          </div>
+          <span className="text-xs uppercase tracking-[0.16em] text-sand-100/44">
+            Subcategory: projects
+          </span>
+        </div>
+
+        {projectEntries.length > 0 ? (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {projectEntries.map((project, index) => (
+              <Reveal key={project.slug} delay={0.06 + index * 0.05}>
+                <Surface className="relative h-full overflow-hidden">
+                  <div
+                    className="pointer-events-none absolute right-[-2rem] top-[-1rem] h-36 w-36 rounded-full blur-3xl"
+                    style={{ backgroundColor: `${project.accent}24` }}
+                  />
+                  <Eyebrow>{project.eyebrow}</Eyebrow>
+                  <h3 className="mt-4 font-display text-3xl leading-tight tracking-[-0.03em] text-sand-50">
+                    {project.title}
+                  </h3>
+                  <span className="mt-3 inline-flex min-h-8 items-center rounded-full border border-white/10 px-3 text-xs uppercase tracking-[0.16em] text-sand-100/56">
+                    {project.year}
+                  </span>
+                  <p className="mt-4 text-base leading-8 text-sand-100/70">
+                    {project.summary}
+                  </p>
+                  <Link
+                    className="mt-6 inline-flex text-sm uppercase tracking-[0.16em] text-brand-100 transition hover:text-sand-50"
+                    to={`/journey/${project.slug}`}
+                  >
+                    Open project
+                  </Link>
+                </Surface>
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <Surface className="bg-ink-900/44">
+            <Eyebrow>Ready for admin entry</Eyebrow>
+            <h3 className="mt-4 font-display text-[1.95rem] leading-tight tracking-[-0.03em] text-sand-50">
+              Project entries will appear here.
+            </h3>
+            <p className="mt-4 max-w-[44ch] text-base leading-8 text-sand-100/70">
+              The new <strong className="text-sand-50">projects</strong>{" "}
+              subcategory is now available in Django admin. Add freelance case
+              studies there and they will show up in this section
+              automatically.
+            </p>
+          </Surface>
+        )}
       </div>
 
-      {journeys.length > 3 ? (
+      <div className="space-y-4">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <Eyebrow>Experience</Eyebrow>
+            <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3.3rem)] leading-[0.98] tracking-[-0.04em] text-sand-50">
+              Delivery chapters that shaped the current offer.
+            </h2>
+          </div>
+          <span className="text-xs uppercase tracking-[0.16em] text-sand-100/44">
+            Subcategory: experience
+          </span>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-3">
+          {featuredProjects.map((project, index) => (
+            <Reveal key={project.name} delay={0.06 + index * 0.05}>
+              <Surface className="relative h-full overflow-hidden">
+                <div
+                  className="pointer-events-none absolute right-[-2rem] top-[-1rem] h-36 w-36 rounded-full blur-3xl"
+                  style={{ backgroundColor: `${project.accent}24` }}
+                />
+                <Eyebrow>{project.discipline}</Eyebrow>
+                <h3 className="mt-4 font-display text-3xl leading-tight tracking-[-0.03em] text-sand-50">
+                  {project.name}
+                </h3>
+                <span className="mt-3 inline-flex min-h-8 items-center rounded-full border border-white/10 px-3 text-xs uppercase tracking-[0.16em] text-sand-100/56">
+                  {project.year}
+                </span>
+                <strong className="mt-4 block text-base font-semibold leading-7 text-sand-50">
+                  {project.outcome}
+                </strong>
+                <p className="mt-4 text-base leading-8 text-sand-100/70">
+                  {project.detail}
+                </p>
+                <Link
+                  className="mt-6 inline-flex text-sm uppercase tracking-[0.16em] text-brand-100 transition hover:text-sand-50"
+                  to={`/journey/${project.slug}`}
+                >
+                  Read the full chapter
+                </Link>
+              </Surface>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+
+      {experienceEntries.length > 3 ? (
         <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
-          {journeys.slice(3).map((entry, index) => (
+          {experienceEntries.slice(3).map((entry, index) => (
             <Reveal key={entry.slug} delay={0.16 + index * 0.04}>
               <Surface className="h-full bg-ink-900/44">
                 <div className="flex items-center justify-between gap-3">
