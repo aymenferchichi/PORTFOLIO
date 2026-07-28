@@ -77,6 +77,40 @@ function createLambertCityMaterial(material) {
   return lambertMaterial;
 }
 
+const unitBoxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const unitPlaneGeometry = new THREE.PlaneGeometry(1, 1);
+const unitPoleGeometry = new THREE.CylinderGeometry(0.08, 0.08, 1, 8);
+const unitLampGeometry = new THREE.SphereGeometry(1, 10, 8);
+
+function AdaptiveMaterial({
+  simplified,
+  color,
+  roughness = 0.5,
+  metalness = 0.1,
+  transparent = false,
+  opacity = 1,
+}) {
+  if (simplified) {
+    return (
+      <meshLambertMaterial
+        color={color}
+        transparent={transparent}
+        opacity={opacity}
+      />
+    );
+  }
+
+  return (
+    <meshStandardMaterial
+      color={color}
+      roughness={roughness}
+      metalness={metalness}
+      transparent={transparent}
+      opacity={opacity}
+    />
+  );
+}
+
 function detectSceneProfile() {
   if (typeof window === "undefined") {
     return {
@@ -392,9 +426,11 @@ function MilestoneCard({
   opacity = 1,
   positionOverride,
   interactive = true,
-  compactText = false,
+  detailLevel = 0,
 }) {
   useCursor(isHovered);
+  const simplified = detailLevel >= 1;
+  const minimal = detailLevel >= 2;
   const cardLift = isActive ? 0.2 : 0;
   const resolvedPosition =
     positionOverride || resolveMilestonePosition(milestone, layout);
@@ -427,146 +463,230 @@ function MilestoneCard({
       onPointerOver={interactive ? onHover(true) : undefined}
       onPointerOut={interactive ? onHover(false) : undefined}
     >
-      <mesh position={[-poleOffset, poleY, -0.18]}>
-        <cylinderGeometry args={[0.08, 0.08, poleHeight, 10]} />
-        <meshStandardMaterial
+      <mesh
+        geometry={unitPoleGeometry}
+        position={[-poleOffset, poleY, -0.18]}
+        scale={[1, poleHeight, 1]}
+      >
+        <AdaptiveMaterial
+          simplified={simplified}
           color={postColor}
           roughness={0.4}
           metalness={0.62}
         />
       </mesh>
 
-      <mesh position={[poleOffset, poleY, -0.18]}>
-        <cylinderGeometry args={[0.08, 0.08, poleHeight, 10]} />
-        <meshStandardMaterial
+      <mesh
+        geometry={unitPoleGeometry}
+        position={[poleOffset, poleY, -0.18]}
+        scale={[1, poleHeight, 1]}
+      >
+        <AdaptiveMaterial
+          simplified={simplified}
           color={postColor}
           roughness={0.4}
           metalness={0.62}
         />
       </mesh>
 
-      <mesh position={[-poleOffset, postCapY, -0.16]}>
-        <boxGeometry args={[0.34, 0.24, 0.18]} />
-        <meshStandardMaterial
-          color="#c8c8ce"
-          roughness={0.56}
-          metalness={0.18}
-        />
-      </mesh>
+      {!minimal ? (
+        <>
+          <mesh
+            geometry={unitBoxGeometry}
+            position={[-poleOffset, postCapY, -0.16]}
+            scale={[0.34, 0.24, 0.18]}
+          >
+            <AdaptiveMaterial
+              simplified={simplified}
+              color="#c8c8ce"
+              roughness={0.56}
+              metalness={0.18}
+            />
+          </mesh>
 
-      <mesh position={[poleOffset, postCapY, -0.16]}>
-        <boxGeometry args={[0.34, 0.24, 0.18]} />
-        <meshStandardMaterial
-          color="#c8c8ce"
-          roughness={0.56}
-          metalness={0.18}
-        />
-      </mesh>
+          <mesh
+            geometry={unitBoxGeometry}
+            position={[poleOffset, postCapY, -0.16]}
+            scale={[0.34, 0.24, 0.18]}
+          >
+            <AdaptiveMaterial
+              simplified={simplified}
+              color="#c8c8ce"
+              roughness={0.56}
+              metalness={0.18}
+            />
+          </mesh>
 
-      <mesh position={[-poleOffset, postBaseY, -0.16]}>
-        <boxGeometry args={[0.28, 0.64, 0.2]} />
-        <meshStandardMaterial
-          color="#c6c6cb"
-          roughness={0.62}
-          metalness={0.16}
-        />
-      </mesh>
+          <mesh
+            geometry={unitBoxGeometry}
+            position={[-poleOffset, postBaseY, -0.16]}
+            scale={[0.28, 0.64, 0.2]}
+          >
+            <AdaptiveMaterial
+              simplified={simplified}
+              color="#c6c6cb"
+              roughness={0.62}
+              metalness={0.16}
+            />
+          </mesh>
 
-      <mesh position={[poleOffset, postBaseY, -0.16]}>
-        <boxGeometry args={[0.28, 0.64, 0.2]} />
-        <meshStandardMaterial
-          color="#c6c6cb"
-          roughness={0.62}
-          metalness={0.16}
-        />
-      </mesh>
+          <mesh
+            geometry={unitBoxGeometry}
+            position={[poleOffset, postBaseY, -0.16]}
+            scale={[0.28, 0.64, 0.2]}
+          >
+            <AdaptiveMaterial
+              simplified={simplified}
+              color="#c6c6cb"
+              roughness={0.62}
+              metalness={0.16}
+            />
+          </mesh>
+        </>
+      ) : null}
 
-      <RoundedBox
-        args={[layout.width + 0.08, topPanelHeight + 0.08, 0]}
-        radius={0.22}
-        smoothness={4}
-        position={[0, topPanelY, -0.01]}
-      >
-        <meshStandardMaterial
-          color={signBorder}
-          roughness={0.52}
-          metalness={0.08}
-          transparent={isTransparent}
-          opacity={opacity}
-        />
-      </RoundedBox>
+      {simplified ? (
+        <>
+          <mesh
+            geometry={unitPlaneGeometry}
+            position={[0, topPanelY, -0.012]}
+            scale={[layout.width + 0.08, topPanelHeight + 0.08, 1]}
+          >
+            <meshBasicMaterial
+              color={signBorder}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </mesh>
 
-      <RoundedBox
-        args={[layout.width, topPanelHeight, 0.2]}
-        radius={0.2}
-        smoothness={4}
-        position={[0, topPanelY, 0.01]}
-      >
-        <meshStandardMaterial
-          color={signBlue}
-          roughness={0.46}
-          metalness={0.12}
-          envMapIntensity={1.1}
-          transparent={isTransparent}
-          opacity={opacity}
-        />
-      </RoundedBox>
+          <mesh
+            geometry={unitPlaneGeometry}
+            position={[0, topPanelY, 0.01]}
+            scale={[layout.width, topPanelHeight, 1]}
+          >
+            <meshBasicMaterial
+              color={signBlue}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </mesh>
 
-      <RoundedBox
-        args={[layout.width * 0.92, topPanelHeight * 0.9, 0.05]}
-        radius={0.18}
-        smoothness={4}
-        position={[0, topPanelY, 0.08]}
-      >
-        <meshBasicMaterial
-          color={signBlueInner}
-          transparent
-          opacity={opacity * 0.14}
-        />
-      </RoundedBox>
+          <mesh
+            geometry={unitPlaneGeometry}
+            position={[0, lowerPanelY, -0.012]}
+            scale={[lowerPanelWidth + 0.05, lowerPanelHeight + 0.05, 1]}
+          >
+            <meshBasicMaterial
+              color={signBorder}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </mesh>
 
-      <RoundedBox
-        args={[lowerPanelWidth + 0.05, lowerPanelHeight + 0.05, 0]}
-        radius={0.16}
-        smoothness={4}
-        position={[0, lowerPanelY, -0.01]}
-      >
-        <meshStandardMaterial
-          color={signBorder}
-          roughness={0.52}
-          metalness={0.08}
-          transparent={isTransparent}
-          opacity={opacity}
-        />
-      </RoundedBox>
+          <mesh
+            geometry={unitPlaneGeometry}
+            position={[0, lowerPanelY, 0.01]}
+            scale={[lowerPanelWidth, lowerPanelHeight, 1]}
+          >
+            <meshBasicMaterial
+              color={signBlue}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </mesh>
+        </>
+      ) : (
+        <>
+          <RoundedBox
+            args={[layout.width + 0.08, topPanelHeight + 0.08, 0]}
+            radius={0.22}
+            smoothness={4}
+            position={[0, topPanelY, -0.01]}
+          >
+            <meshStandardMaterial
+              color={signBorder}
+              roughness={0.52}
+              metalness={0.08}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </RoundedBox>
 
-      <RoundedBox
-        args={[lowerPanelWidth, lowerPanelHeight, 0.18]}
-        radius={0.15}
-        smoothness={4}
-        position={[0, lowerPanelY, 0.01]}
-      >
-        <meshStandardMaterial
-          color={signBlue}
-          roughness={0.46}
-          metalness={0.12}
-          transparent={isTransparent}
-          opacity={opacity}
-        />
-      </RoundedBox>
+          <RoundedBox
+            args={[layout.width, topPanelHeight, 0.2]}
+            radius={0.2}
+            smoothness={4}
+            position={[0, topPanelY, 0.01]}
+          >
+            <meshStandardMaterial
+              color={signBlue}
+              roughness={0.46}
+              metalness={0.12}
+              envMapIntensity={1.1}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </RoundedBox>
 
-      <Text
-        position={[0, lowerPanelY, 0.24]}
-        anchorX="center"
-        anchorY="middle"
-        font={textFontPath}
-        fontSize={layout.detailFontSize * 0.8}
-        color="#f5f9ff"
-        maxWidth={lowerPanelWidth - 0.3}
-        fillOpacity={opacity}
-      >
-        {badgeLabel}
-      </Text>
+          <RoundedBox
+            args={[layout.width * 0.92, topPanelHeight * 0.9, 0.05]}
+            radius={0.18}
+            smoothness={4}
+            position={[0, topPanelY, 0.08]}
+          >
+            <meshBasicMaterial
+              color={signBlueInner}
+              transparent
+              opacity={opacity * 0.14}
+            />
+          </RoundedBox>
+
+          <RoundedBox
+            args={[lowerPanelWidth + 0.05, lowerPanelHeight + 0.05, 0]}
+            radius={0.16}
+            smoothness={4}
+            position={[0, lowerPanelY, -0.01]}
+          >
+            <meshStandardMaterial
+              color={signBorder}
+              roughness={0.52}
+              metalness={0.08}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </RoundedBox>
+
+          <RoundedBox
+            args={[lowerPanelWidth, lowerPanelHeight, 0.18]}
+            radius={0.15}
+            smoothness={4}
+            position={[0, lowerPanelY, 0.01]}
+          >
+            <meshStandardMaterial
+              color={signBlue}
+              roughness={0.46}
+              metalness={0.12}
+              transparent={isTransparent}
+              opacity={opacity}
+            />
+          </RoundedBox>
+        </>
+      )}
+
+      {!minimal ? (
+        <Text
+          position={[0, lowerPanelY, 0.24]}
+          anchorX="center"
+          anchorY="middle"
+          font={textFontPath}
+          fontSize={layout.detailFontSize * 0.8}
+          color="#f5f9ff"
+          maxWidth={lowerPanelWidth - 0.3}
+          fillOpacity={opacity}
+        >
+          {badgeLabel}
+        </Text>
+      ) : null}
 
       <Text
         position={[topTextLeft, yearY, 0.24]}
@@ -592,7 +712,7 @@ function MilestoneCard({
       >
         {milestone.title}
       </Text>
-      {!compactText ? (
+      {!minimal ? (
         <Text
           position={[topTextLeft, detailY, 0.24]}
           anchorX="left"
@@ -611,7 +731,9 @@ function MilestoneCard({
   );
 }
 
-function RoadSignal({ milestone, layout, signalState = "red" }) {
+function RoadSignal({ milestone, layout, signalState = "red", detailLevel = 0 }) {
+  const simplified = detailLevel >= 1;
+  const minimal = detailLevel >= 2;
   const signalX = layout.width * 0.5 + 0.52;
   const signalY = milestone.position[1] + layout.yOffset - 0.55;
   const signalZ = milestone.position[2] + signalLeadDistance;
@@ -621,44 +743,64 @@ function RoadSignal({ milestone, layout, signalState = "red" }) {
 
   return (
     <group position={[signalX, signalY, signalZ]} scale={layout.scale * 0.94}>
-      <mesh position={[0, -1.2, -0.04]}>
-        <cylinderGeometry args={[0.08, 0.1, 3, 10]} />
-        <meshStandardMaterial
+      <mesh
+        geometry={unitPoleGeometry}
+        position={[0, -1.2, -0.04]}
+        scale={[1, 3, 1]}
+      >
+        <AdaptiveMaterial
+          simplified={simplified}
           color="#9ca7b3"
           roughness={0.4}
           metalness={0.64}
         />
       </mesh>
 
-      <mesh position={[0, 0.5, 0]}>
-        <boxGeometry args={[0.86, 1.66, 0.52]} />
-        <meshStandardMaterial
+      <mesh
+        geometry={unitBoxGeometry}
+        position={[0, 0.5, 0]}
+        scale={[0.86, 1.66, 0.52]}
+      >
+        <AdaptiveMaterial
+          simplified={simplified}
           color="#192028"
           roughness={0.56}
           metalness={0.22}
         />
       </mesh>
 
-      <mesh position={[0, 0.9, 0.28]}>
-        <sphereGeometry args={[0.21, 12, 12]} />
+      <mesh
+        geometry={unitLampGeometry}
+        position={[0, 0.9, 0.28]}
+        scale={0.21}
+      >
         <meshBasicMaterial color={redActive ? "#ff4d43" : "#220606"} />
       </mesh>
 
-      {redActive ? (
-        <mesh position={[0, 0.9, 0.34]} scale={activeLampScale}>
-          <sphereGeometry args={[0.24, 10, 10]} />
+      {redActive && !minimal ? (
+        <mesh
+          geometry={unitLampGeometry}
+          position={[0, 0.9, 0.34]}
+          scale={0.24 * activeLampScale}
+        >
           <meshBasicMaterial color="#ff7a72" transparent opacity={0.24} />
         </mesh>
       ) : null}
 
-      <mesh position={[0, 0.16, 0.28]}>
-        <sphereGeometry args={[0.21, 12, 12]} />
+      <mesh
+        geometry={unitLampGeometry}
+        position={[0, 0.16, 0.28]}
+        scale={0.21}
+      >
         <meshBasicMaterial color={greenActive ? "#4ef06f" : "#071a0a"} />
       </mesh>
 
-      {greenActive ? (
-        <mesh position={[0, 0.16, 0.34]} scale={activeLampScale}>
-          <sphereGeometry args={[0.24, 10, 10]} />
+      {greenActive && !minimal ? (
+        <mesh
+          geometry={unitLampGeometry}
+          position={[0, 0.16, 0.34]}
+          scale={0.24 * activeLampScale}
+        >
           <meshBasicMaterial color="#82ff9b" transparent opacity={0.24} />
         </mesh>
       ) : null}
@@ -1142,35 +1284,54 @@ function useCityEnvironment(qualityTier = 0) {
 }
 
 function RepeatingCityEnvironment({
-  travelOffset,
+  progressRef,
+  roadTravelDistance,
   qualityTier = 0,
   useSingleSegment = false,
 }) {
   const useCompactScene = qualityTier >= 2;
   const { cityScenes, segmentLength } = useCityEnvironment(qualityTier);
-  const wrappedOffset = THREE.MathUtils.euclideanModulo(
-    travelOffset,
-    segmentLength,
-  );
+  const leadRef = useRef(null);
+  const trailRef = useRef(null);
   const trailingOffset = useCompactScene ? segmentLength * 0.72 : segmentLength;
+
+  useFrame(() => {
+    const travelOffset =
+      (progressRef?.current?.value ?? 0) * roadTravelDistance;
+    const wrappedOffset = THREE.MathUtils.euclideanModulo(
+      travelOffset,
+      segmentLength,
+    );
+
+    if (leadRef.current) {
+      leadRef.current.position.z = cityBasePosition[2] + wrappedOffset;
+    }
+
+    if (trailRef.current) {
+      trailRef.current.position.z =
+        cityBasePosition[2] - trailingOffset + wrappedOffset;
+    }
+  });
 
   return (
     <>
       <primitive
+        ref={leadRef}
         object={cityScenes[0]}
         position={[
           cityBasePosition[0],
           cityBasePosition[1],
-          cityBasePosition[2] + wrappedOffset,
+          cityBasePosition[2],
         ]}
       />
       {cityScenes[1] && !useSingleSegment ? (
         <primitive
+          ref={trailRef}
           object={cityScenes[1]}
           position={[
             cityBasePosition[0],
             cityBasePosition[1],
-            cityBasePosition[2] - trailingOffset + wrappedOffset,
+            cityBasePosition[2] - trailingOffset,
           ]}
         />
       ) : null}
@@ -1207,7 +1368,7 @@ function AtmosphereDome() {
 }
 
 function RoadScene({
-  progress,
+  progressRef,
   sceneData,
   reducedMotion = false,
   onImpact,
@@ -1219,22 +1380,27 @@ function RoadScene({
   const { size } = useThree();
   const { allMilestones, roadTravelDistance } = sceneData;
   const lastMilestoneId = allMilestones.at(-1)?.id ?? null;
-  const travelOffset = progress * roadTravelDistance;
   const [hoveredMilestone, setHoveredMilestone] = useState(null);
   const [impactStates, setImpactStates] = useState([]);
   const [removedMilestoneIds, setRemovedMilestoneIds] = useState([]);
   const impactIdsRef = useRef(new Set());
   const impactTimeoutsRef = useRef([]);
-  const previousTravelOffsetRef = useRef(travelOffset);
+  const previousTravelOffsetRef = useRef(0);
+  const cullNodesRef = useRef(new Map());
   const isMobileViewport = size.width < 640;
   const useBalancedScene = isMobileViewport || qualityTier >= 1;
   const useCompactScene = isMobileViewport || qualityTier >= 2;
-  const useCompactText = qualityTier >= 2;
+  const cardDetailLevel = useCompactScene ? 2 : useBalancedScene ? 1 : 0;
   const cardLayout = isMobileViewport ? mobileCardLayout : desktopCardLayout;
-  const visibleMilestones = allMilestones.filter((milestone) => {
-    const cardWorldZ = milestone.position[2] + travelOffset;
-    return cardWorldZ <= visibleSceneFrontZ && cardWorldZ >= visibleSceneBackZ;
-  });
+
+  const registerCullNode = (key, cullZ) => (node) => {
+    if (node) {
+      node.userData.cullZ = cullZ;
+      cullNodesRef.current.set(key, node);
+    } else {
+      cullNodesRef.current.delete(key);
+    }
+  };
 
   useEffect(() => {
     setImpactStates([]);
@@ -1279,12 +1445,23 @@ function RoadScene({
   };
 
   useFrame(() => {
+    const travelOffset =
+      (progressRef?.current?.value ?? 0) * roadTravelDistance;
+
     if (worldRef.current) {
       worldRef.current.position.z = THREE.MathUtils.lerp(
         worldRef.current.position.z,
         travelOffset,
         0.08,
       );
+
+      const worldZ = worldRef.current.position.z;
+
+      cullNodesRef.current.forEach((node) => {
+        const cardWorldZ = node.userData.cullZ + worldZ;
+        node.visible =
+          cardWorldZ <= visibleSceneFrontZ && cardWorldZ >= visibleSceneBackZ;
+      });
 
       if (useBalancedScene) {
         previousTravelOffsetRef.current = travelOffset;
@@ -1517,40 +1694,53 @@ function RoadScene({
       />
 
       <RepeatingCityEnvironment
-        travelOffset={travelOffset}
+        progressRef={progressRef}
+        roadTravelDistance={roadTravelDistance}
         qualityTier={qualityTier}
         useSingleSegment={qualityTier >= 2}
       />
 
       <group ref={worldRef}>
-        {visibleMilestones
+        {allMilestones
           .filter((milestone) => milestone.id !== lastMilestoneId)
           .map((milestone) => (
-            <RoadSignal
+            <group
               key={milestone.id + "-signal"}
-              milestone={milestone}
-              layout={cardLayout}
-              signalState={signalStateById[milestone.id] || "red"}
-            />
+              ref={registerCullNode(
+                milestone.id + "-signal",
+                milestone.position[2],
+              )}
+            >
+              <RoadSignal
+                milestone={milestone}
+                layout={cardLayout}
+                signalState={signalStateById[milestone.id] || "red"}
+                detailLevel={cardDetailLevel}
+              />
+            </group>
           ))}
 
-        {visibleMilestones
+        {allMilestones
           .filter((milestone) => !hiddenMilestoneIds.has(milestone.id))
           .map((milestone) => (
-            <MilestoneCard
+            <group
               key={milestone.id}
-              milestone={milestone}
-              isActive={hoveredMilestone === milestone.id}
-              isHovered={hoveredMilestone === milestone.id}
-              layout={cardLayout}
-              compactText={useCompactText}
-              onHover={(hovered) => () => {
-                setHoveredMilestone(hovered ? milestone.id : null);
-              }}
-              onSelect={() => {
-                navigate("/journey/" + milestone.slug);
-              }}
-            />
+              ref={registerCullNode(milestone.id, milestone.position[2])}
+            >
+              <MilestoneCard
+                milestone={milestone}
+                isActive={hoveredMilestone === milestone.id}
+                isHovered={hoveredMilestone === milestone.id}
+                layout={cardLayout}
+                detailLevel={cardDetailLevel}
+                onHover={(hovered) => () => {
+                  setHoveredMilestone(hovered ? milestone.id : null);
+                }}
+                onSelect={() => {
+                  navigate("/journey/" + milestone.slug);
+                }}
+              />
+            </group>
           ))}
 
         {impactStates
@@ -1562,7 +1752,7 @@ function RoadScene({
               isActive={false}
               isHovered={false}
               layout={impact.layout}
-              compactText={useCompactText}
+              detailLevel={cardDetailLevel}
               positionOverride={impact.localPosition}
               interactive={false}
               onHover={() => () => {}}
@@ -1590,7 +1780,7 @@ function RoadScene({
               isActive={false}
               isHovered={false}
               layout={impact.layout}
-              compactText={useCompactText}
+              detailLevel={cardDetailLevel}
               positionOverride={impact.localPosition}
               interactive={false}
               onHover={() => () => {}}
@@ -1608,7 +1798,7 @@ function RoadScene({
               isActive={false}
               isHovered={false}
               layout={impact.layout}
-              compactText={useCompactText}
+              detailLevel={cardDetailLevel}
               positionOverride={impact.worldPosition}
               interactive={false}
               onHover={() => () => {}}
@@ -1700,7 +1890,7 @@ function SceneLoader() {
 }
 
 function DriveExperience({
-  progress,
+  progressRef,
   sceneData,
   reducedMotion = false,
   onImpact,
@@ -1750,7 +1940,7 @@ function DriveExperience({
       </style>
       <Canvas
         dpr={canvasDpr}
-        shadows={qualityTier === 0}
+        shadows={false}
         performance={{ min: 0.5, debounce: 200 }}
         gl={{
           antialias: qualityTier === 0,
@@ -1774,7 +1964,7 @@ function DriveExperience({
             }}
           />
           <RoadScene
-            progress={progress}
+            progressRef={progressRef}
             sceneData={resolvedSceneData}
             reducedMotion={reducedMotion}
             onImpact={onImpact}

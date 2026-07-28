@@ -63,7 +63,9 @@ function HomePage() {
     typeof window !== "undefined" ? window.scrollY : 0,
   );
   const releasedStopIdsRef = useRef(new Set());
-  const [progress, setProgress] = useState(0);
+  const progressRef = useRef({ value: 0 });
+  const progressBarRef = useRef(null);
+  const progressTrackRef = useRef(null);
   const [journeys, setJourneys] = useState([]);
   const [isSkipVisible, setIsSkipVisible] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(
@@ -234,6 +236,22 @@ function HomePage() {
   useEffect(() => {
     let frameId = null;
 
+    const applyProgress = (value) => {
+      progressRef.current.value = value;
+
+      if (progressBarRef.current) {
+        progressBarRef.current.style.transform =
+          "scaleX(" + Math.max(value, 0.03) + ")";
+      }
+
+      if (progressTrackRef.current) {
+        progressTrackRef.current.setAttribute(
+          "aria-valuenow",
+          String(Math.round(value * 100)),
+        );
+      }
+    };
+
     const updateScrollProgress = () => {
       if (!heroRef.current) {
         return;
@@ -244,7 +262,7 @@ function HomePage() {
       const maxScrollable = heroRef.current.offsetHeight - window.innerHeight;
 
       if (maxScrollable <= 0 || sceneData.roadTravelDistance <= 0) {
-        setProgress(0);
+        applyProgress(0);
         return;
       }
 
@@ -256,7 +274,7 @@ function HomePage() {
           });
         }
 
-        setProgress(scrollLockRef.current.progress);
+        applyProgress(scrollLockRef.current.progress);
         previousScrollYRef.current = scrollLockRef.current.targetY;
         return;
       }
@@ -321,13 +339,13 @@ function HomePage() {
           };
 
           setActiveStopId(nextStop.id);
-          setProgress(lockedProgress);
+          applyProgress(lockedProgress);
           window.scrollTo({ top: targetY, behavior: "auto" });
           return;
         }
       }
 
-      setProgress(nextProgress);
+      applyProgress(nextProgress);
     };
 
     const scheduleScrollUpdate = () => {
@@ -375,7 +393,7 @@ function HomePage() {
         animate={prefersReducedMotion ? undefined : shakeControls}
       >
         <DriveExperience
-          progress={progress}
+          progressRef={progressRef}
           sceneData={sceneData}
           reducedMotion={prefersReducedMotion}
           onImpact={handleImpact}
@@ -388,7 +406,7 @@ function HomePage() {
             initial={{ opacity: 0, y: -22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto max-w-[15rem] rounded-[20px] border border-white/10 bg-ink-950/54 p-4 shadow-panel backdrop-blur-[20px] sm:max-w-sm sm:rounded-[24px] sm:p-5"
+            className="pointer-events-auto max-w-[15rem] rounded-[20px] border border-white/10 bg-ink-950/82 p-4 shadow-panel sm:max-w-sm sm:rounded-[24px] sm:bg-ink-950/54 sm:p-5 sm:backdrop-blur-[20px]"
           >
             <Eyebrow>Interactive portfolio</Eyebrow>
             <strong className="mt-2 block text-[0.72rem] uppercase tracking-[0.14em] text-sand-50/92 sm:mt-3 sm:text-sm">
@@ -420,11 +438,13 @@ function HomePage() {
                   role="progressbar"
                   aria-valuemin="0"
                   aria-valuemax="100"
-                  aria-valuenow={Math.round(progress * 100)}
+                  aria-valuenow="0"
+                  ref={progressTrackRef}
                 >
                   <div
+                    ref={progressBarRef}
                     className="h-full origin-left rounded-full bg-gradient-to-r from-brand-100 to-brand-300"
-                    style={{ transform: `scaleX(${Math.max(progress, 0.03)})` }}
+                    style={{ transform: "scaleX(0.03)" }}
                   />
                 </div>
               </div>
