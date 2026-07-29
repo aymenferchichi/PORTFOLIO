@@ -293,13 +293,21 @@ function sampleFragmentColor(milestone, layout, localX, localY) {
   return backgroundColor;
 }
 
+const fragmentGridByDetail = [
+  { columns: 14, rows: 10 },
+  { columns: 10, rows: 7 },
+  { columns: 8, rows: 5 },
+];
+
 function createFragmentBlueprints(
   milestone,
   layout,
   randomSource = Math.random,
+  detailLevel = 0,
 ) {
-  const columns = 14;
-  const rows = 10;
+  const grid = fragmentGridByDetail[Math.min(Math.max(detailLevel, 0), 2)];
+  const columns = grid.columns;
+  const rows = grid.rows;
   const usableWidth = layout.width - 0.22;
   const usableHeight = layout.height - 0.18;
   const cellWidth = usableWidth / columns;
@@ -364,8 +372,10 @@ function createFragmentBlueprints(
   });
 }
 
-function createDustBlueprints() {
-  return Array.from({ length: 32 }, () => ({
+function createDustBlueprints(detailLevel = 0) {
+  const count = detailLevel >= 2 ? 12 : detailLevel === 1 ? 20 : 32;
+
+  return Array.from({ length: count }, () => ({
     initialPosition: new THREE.Vector3(
       randomBetween(-0.35, 0.35),
       randomBetween(-0.25, 0.35),
@@ -379,7 +389,7 @@ function createDustBlueprints() {
   }));
 }
 
-function createRebuildFragmentBlueprints(milestone, layout) {
+function createRebuildFragmentBlueprints(milestone, layout, detailLevel = 0) {
   const randomSource = createSeededRandom(
     hashString(`${milestone.id}-rebuild`),
   );
@@ -387,6 +397,7 @@ function createRebuildFragmentBlueprints(milestone, layout) {
     milestone,
     layout,
     createSeededRandom(hashString(`${milestone.id}-shatter`)),
+    detailLevel,
   );
 
   return baseFragments.map((fragment) => {
@@ -865,16 +876,21 @@ function ImpactShatterBurst({ impact, onComplete }) {
   const fragmentsRef = useRef(null);
   const dustRef = useRef(null);
   const elapsedRef = useRef(0);
+  const detailLevel = impact.detailLevel ?? 0;
   const pieceBlueprints = useMemo(
     () =>
       createFragmentBlueprints(
         impact.milestone,
         impact.layout,
         createSeededRandom(hashString(`${impact.id}-shatter`)),
+        detailLevel,
       ),
-    [impact.id, impact.layout, impact.milestone],
+    [detailLevel, impact.id, impact.layout, impact.milestone],
   );
-  const dustBlueprints = useMemo(() => createDustBlueprints(), []);
+  const dustBlueprints = useMemo(
+    () => createDustBlueprints(detailLevel),
+    [detailLevel],
+  );
   const piecesStateRef = useRef(
     pieceBlueprints.map((piece) => ({
       position: piece.initialPosition.clone(),
@@ -983,13 +999,17 @@ function ImpactShatterBurst({ impact, onComplete }) {
         args={[null, null, pieceBlueprints.length]}
       >
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial
-          vertexColors
-          transparent
-          opacity={1}
-          roughness={0.36}
-          metalness={0.14}
-        />
+        {detailLevel >= 1 ? (
+          <meshLambertMaterial vertexColors transparent opacity={1} />
+        ) : (
+          <meshStandardMaterial
+            vertexColors
+            transparent
+            opacity={1}
+            roughness={0.36}
+            metalness={0.14}
+          />
+        )}
       </instancedMesh>
       <points ref={dustRef}>
         <bufferGeometry>
@@ -1018,11 +1038,20 @@ function ImpactRebuildBurst({ impact, onComplete, positionOverride }) {
   const dustRef = useRef(null);
   const flashRef = useRef(null);
   const elapsedRef = useRef(0);
+  const detailLevel = impact.detailLevel ?? 0;
   const pieceBlueprints = useMemo(
-    () => createRebuildFragmentBlueprints(impact.milestone, impact.layout),
-    [impact.layout, impact.milestone],
+    () =>
+      createRebuildFragmentBlueprints(
+        impact.milestone,
+        impact.layout,
+        detailLevel,
+      ),
+    [detailLevel, impact.layout, impact.milestone],
   );
-  const dustBlueprints = useMemo(() => createDustBlueprints(), []);
+  const dustBlueprints = useMemo(
+    () => createDustBlueprints(detailLevel),
+    [detailLevel],
+  );
   const fragmentDummy = useMemo(() => new THREE.Object3D(), []);
   const fragmentScale = impact.layout.scale;
 
@@ -1053,30 +1082,27 @@ function ImpactRebuildBurst({ impact, onComplete, positionOverride }) {
     const flashOpacity = Math.sin(flashProgress * Math.PI) * 0.42;
 
     pieceBlueprints.forEach((piece, index) => {
-      const position = piece.scatterPosition
-        .clone()
+      fragmentDummy.position
+        .copy(piece.scatterPosition)
         .lerp(piece.initialPosition, eased);
-      const rotation = new THREE.Euler(
+      fragmentDummy.rotation.set(
         THREE.MathUtils.lerp(piece.scatterRotation.x, piece.rotation.x, eased),
         THREE.MathUtils.lerp(piece.scatterRotation.y, piece.rotation.y, eased),
         THREE.MathUtils.lerp(piece.scatterRotation.z, piece.rotation.z, eased),
       );
       const smear = 1 + inverse * 0.34;
 
-      fragmentDummy.position.copy(position);
-      fragmentDummy.rotation.set(rotation.x, rotation.y, rotation.z);
       fragmentDummy.scale.set(piece.size.x, piece.size.y, piece.size.z * smear);
       fragmentDummy.updateMatrix();
       fragmentsRef.current.setMatrixAt(index, fragmentDummy.matrix);
     });
 
     dustBlueprints.forEach((particle, index) => {
-      const position = particle.initialPosition.clone().multiplyScalar(inverse);
       dustRef.current.geometry.attributes.position.setXYZ(
         index,
-        position.x,
-        position.y,
-        position.z,
+        particle.initialPosition.x * inverse,
+        particle.initialPosition.y * inverse,
+        particle.initialPosition.z * inverse,
       );
     });
 
@@ -1105,13 +1131,17 @@ function ImpactRebuildBurst({ impact, onComplete, positionOverride }) {
         args={[null, null, pieceBlueprints.length]}
       >
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial
-          vertexColors
-          transparent
-          opacity={1}
-          roughness={0.36}
-          metalness={0.14}
-        />
+        {detailLevel >= 1 ? (
+          <meshLambertMaterial vertexColors transparent opacity={1} />
+        ) : (
+          <meshStandardMaterial
+            vertexColors
+            transparent
+            opacity={1}
+            roughness={0.36}
+            metalness={0.14}
+          />
+        )}
       </instancedMesh>
       <points ref={dustRef}>
         <bufferGeometry>
@@ -1463,11 +1493,6 @@ function RoadScene({
           cardWorldZ <= visibleSceneFrontZ && cardWorldZ >= visibleSceneBackZ;
       });
 
-      if (useBalancedScene) {
-        previousTravelOffsetRef.current = travelOffset;
-        return;
-      }
-
       const isReversing = travelOffset < previousTravelOffsetRef.current;
       const isAdvancing = travelOffset > previousTravelOffsetRef.current;
       previousTravelOffsetRef.current = travelOffset;
@@ -1559,6 +1584,7 @@ function RoadScene({
             resolvedPosition[1],
             nextCollision.position[2],
           ],
+          detailLevel: cardDetailLevel,
           stage: "hitstop",
         };
 
@@ -1624,6 +1650,7 @@ function RoadScene({
                 resolvedPosition[1],
                 nextRebuild.position[2],
               ],
+              detailLevel: cardDetailLevel,
               stage: reducedMotion ? "refading" : "rebuilding",
             },
           ]);
