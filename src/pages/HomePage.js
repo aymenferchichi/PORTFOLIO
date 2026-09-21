@@ -2,7 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import { Link } from "react-router-dom";
 import DriveExperience from "../components/DriveExperience";
-import { Eyebrow } from "../components/SitePrimitives";
+import {
+  Eyebrow,
+} from "../components/SitePrimitives";
 import {
   buildJourneyScene,
   calculateScrollRunway,
@@ -376,122 +378,124 @@ function HomePage() {
   }, [firstMilestoneId, lastMilestoneId, sceneData]);
 
   return (
-    <section
-      ref={heroRef}
-      className="drive-hero-fullscreen"
-      style={{
-        minHeight: `calc(100vh + ${calculateScrollRunway(
-          sceneData.roadTravelDistance,
-          {
-            isMobile: isMobileViewport,
-          },
-        )}px)`,
-      }}
-    >
-      <motion.div
-        className="drive-hero-stage relative"
-        animate={prefersReducedMotion ? undefined : shakeControls}
+    <>
+      <section
+        ref={heroRef}
+        className="drive-hero-fullscreen"
+        style={{
+          minHeight: `calc(100vh + ${calculateScrollRunway(
+            sceneData.roadTravelDistance,
+            {
+              isMobile: isMobileViewport,
+            },
+          )}px)`,
+        }}
       >
-        <DriveExperience
-          progressRef={progressRef}
-          sceneData={sceneData}
-          reducedMotion={prefersReducedMotion}
-          onImpact={handleImpact}
-          activeStopId={activeStopId}
-          signalStateById={signalStateById}
-        />
+        <motion.div
+          className="drive-hero-stage relative"
+          animate={prefersReducedMotion ? undefined : shakeControls}
+        >
+          <DriveExperience
+            progressRef={progressRef}
+            sceneData={sceneData}
+            reducedMotion={prefersReducedMotion}
+            onImpact={handleImpact}
+            activeStopId={activeStopId}
+            signalStateById={signalStateById}
+          />
 
-        <div className="pointer-events-none absolute inset-0 z-[3] flex flex-col justify-between p-3 pt-24 sm:p-6 sm:pt-24 lg:p-9 lg:pt-28">
-          <motion.div
-            initial={{ opacity: 0, y: -22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto max-w-[15rem] rounded-[20px] border border-white/10 bg-ink-950/82 p-4 shadow-panel sm:max-w-sm sm:rounded-[24px] sm:bg-ink-950/54 sm:p-5 sm:backdrop-blur-[20px]"
-          >
-            <Eyebrow>Interactive portfolio</Eyebrow>
-            <strong className="mt-2 block text-[0.72rem] uppercase tracking-[0.14em] text-sand-50/92 sm:mt-3 sm:text-sm">
-              Design-led freelance work, selected client chapters, and the
-              thinking behind them.
-            </strong>
-            <p className="mt-3 mb-0 text-[0.68rem] leading-5 text-sand-100/72 sm:hidden">
-              Use a PC for the smoothest and most complete experience.
-            </p>
-          </motion.div>
-
-          <div className="mt-auto hidden justify-start pb-16 sm:flex sm:pb-0">
+          <div className="pointer-events-none absolute inset-0 z-[3] flex flex-col justify-between p-3 pt-24 sm:p-6 sm:pt-24 lg:p-9 lg:pt-28">
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                duration: 0.75,
-                delay: 0.14,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="pointer-events-auto w-full max-w-[19rem] rounded-[22px] border border-white/10 bg-ink-950/58 p-4 shadow-panel backdrop-blur-[24px] sm:max-w-[420px] sm:rounded-[28px] sm:p-7"
+              initial={{ opacity: 0, y: -22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-auto max-w-[18rem] rounded-[22px] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(11,20,36,0.56))] p-4 shadow-panel sm:max-w-[22rem] sm:rounded-[26px] sm:p-5 sm:backdrop-blur-[14px]"
             >
-              <div>
-                <span className="block text-[0.7rem] uppercase tracking-[0.18em] text-sand-50/84 sm:text-[0.78rem]">
-                  Road progress
-                </span>
-                <div
-                  className="mt-3 h-2 overflow-hidden rounded-full bg-white/10 sm:mt-4 sm:h-2.5"
-                  role="progressbar"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  aria-valuenow="0"
-                  ref={progressTrackRef}
-                >
-                  <div
-                    ref={progressBarRef}
-                    className="h-full origin-left rounded-full bg-gradient-to-r from-brand-100 to-brand-300"
-                    style={{ transform: "scaleX(0.03)" }}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:gap-4 sm:pt-5">
-                <p className="m-0 text-sm leading-6 text-sand-100/68 sm:text-base sm:leading-8">
-                  Each stop shows how delivery, interface craft, and
-                  client-facing design decisions evolved into a more premium
-                  freelance offer.
-                </p>
-                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
-                  <div className="rounded-[18px] border border-white/8 bg-white/[0.03] p-3 sm:rounded-[22px] sm:p-4">
-                    <span className="block text-[0.68rem] uppercase tracking-[0.18em] text-sand-100/46 sm:text-[0.72rem]">
-                      Journey stops
-                    </span>
-                    <strong className="mt-1.5 block text-xl text-sand-50 sm:mt-2 sm:text-2xl">
-                      {sceneData.allMilestones.length}
-                    </strong>
-                  </div>
-                  <div className="rounded-[18px] border border-white/8 bg-white/[0.03] p-3 sm:rounded-[22px] sm:p-4">
-                    <span className="block text-[0.68rem] uppercase tracking-[0.18em] text-sand-100/46 sm:text-[0.72rem]">
-                      Focus
-                    </span>
-                    <strong className="mt-1.5 block text-sm leading-5 text-sand-50 sm:mt-2 sm:text-lg sm:leading-7">
-                      Freelance positioning, UI direction, and premium delivery
-                    </strong>
-                  </div>
-                </div>
-              </div>
+              <Eyebrow className="text-brand-200">
+                Interactive portfolio
+              </Eyebrow>
+              <p className="mb-0 mt-3 max-w-[30ch] font-display leading-[1.35] tracking-[-0.03em] text-white">
+                Design-led freelance work, selected client chapters, and the
+                thinking behind them.
+              </p>
             </motion.div>
-          </div>
-        </div>
 
-        <div className="pointer-events-none absolute bottom-4 inset-x-3 z-[2] flex justify-center sm:bottom-8 sm:right-8 sm:left-auto sm:justify-end">
-          <Link
-            className={`pointer-events-auto inline-flex min-h-11 w-full max-w-[15rem] items-center justify-center rounded-full border border-white/12 bg-ink-950/62 px-4 text-sm text-sand-50 shadow-panel backdrop-blur-[18px] transition duration-300 hover:-translate-y-0.5 hover:text-brand-100 sm:min-h-12 sm:w-auto sm:max-w-none sm:px-5 ${
-              isSkipVisible
-                ? "translate-y-0 opacity-100"
-                : "translate-y-3 opacity-0"
-            }`}
-            to="/portfolio"
-          >
-            Skip to portfolio
-          </Link>
-        </div>
-      </motion.div>
-    </section>
+            <div className="mt-auto hidden justify-start pb-16 sm:flex sm:pb-0">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.75,
+                  delay: 0.14,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="pointer-events-auto w-full max-w-[19rem] rounded-[22px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(11,20,36,0.52))] p-4 shadow-panel backdrop-blur-[14px] sm:max-w-[390px] sm:rounded-[26px] sm:p-5"
+              >
+                <div>
+                  <span className="block text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-brand-200 sm:text-[0.78rem]">
+                    Journey progress
+                  </span>
+                  <div
+                    className="mt-3 h-2 overflow-hidden rounded-full bg-white/10 sm:mt-4 sm:h-2.5"
+                    role="progressbar"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                    ref={progressTrackRef}
+                  >
+                    <div
+                      ref={progressBarRef}
+                      className="h-full origin-left rounded-full bg-gradient-to-r from-brand-100 to-brand-300"
+                      style={{ transform: "scaleX(0.03)" }}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:gap-4 sm:pt-5">
+                  <p className="m-0 text-sm leading-6 text-white sm:text-base sm:leading-8">
+                    Each stop marks a chapter in the work: sharper interface
+                    decisions, cleaner presentation, and more reliable
+                    client-facing delivery.
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                    <div className="rounded-[20px] border border-white/8 bg-white/[0.04] p-3 sm:rounded-[24px] sm:p-4">
+                      <span className="block text-[0.68rem] uppercase tracking-[0.18em] text-white/60 sm:text-[0.72rem]">
+                        Journey stops
+                      </span>
+                      <strong className="mt-1.5 block font-display text-2xl tracking-[-0.04em] text-white sm:mt-2 sm:text-3xl">
+                        {sceneData.allMilestones.length}
+                      </strong>
+                    </div>
+                    <div className="rounded-[20px] border border-white/8 bg-white/[0.04] p-3 sm:rounded-[24px] sm:p-4">
+                      <span className="block text-[0.68rem] uppercase tracking-[0.18em] text-white/60 sm:text-[0.72rem]">
+                        Focus
+                      </span>
+                      <strong className="mt-1.5 block text-sm leading-5 text-white sm:mt-2 sm:text-lg sm:leading-7">
+                        Clear presentation, trustworthy detail, and polished
+                        execution
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+          <div className="pointer-events-none absolute bottom-4 inset-x-3 z-[2] flex justify-center sm:bottom-8 sm:right-8 sm:left-auto sm:justify-end">
+            <Link
+              className={`pointer-events-auto inline-flex min-h-11 w-full max-w-[16rem] items-center justify-center rounded-full border border-white/12 bg-ink-950/62 px-4 text-sm font-medium text-white shadow-panel backdrop-blur-[18px] transition duration-300 hover:-translate-y-0.5 hover:text-brand-200 sm:min-h-12 sm:w-auto sm:max-w-none sm:px-5 ${
+                isSkipVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-3 opacity-0"
+              }`}
+              to="/portfolio"
+            >
+              Skip to case studies
+            </Link>
+          </div>
+        </motion.div>
+      </section>
+    </>
   );
 }
 

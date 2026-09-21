@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { fetchJourneyEntry } from "../data/journeyData";
 import {
   Eyebrow,
+  Pill,
   Reveal,
   SectionHeading,
   Surface,
@@ -61,13 +62,30 @@ function JourneyDetailPage() {
           description="Pulling the selected journey from the backend and building the full detail view."
         />
 
-        <Surface className="h-72 animate-pulse bg-white/[0.03]" />
+        <Surface className="h-72 animate-pulse bg-white/70" />
       </section>
     );
   }
 
   const chapterLabel =
     entry.subcategory === "projects" ? "Project" : "Experience";
+  const chapterMetrics = [
+    {
+      label: "Deliverables",
+      value: String(entry.deliverables.length || entry.focus.length).padStart(
+        2,
+        "0",
+      ),
+    },
+    {
+      label: "Focus areas",
+      value: String(entry.focus.length).padStart(2, "0"),
+    },
+    {
+      label: "Year",
+      value: String(entry.year),
+    },
+  ];
 
   return (
     <section className="space-y-10 pt-6 lg:space-y-14">
@@ -76,31 +94,55 @@ function JourneyDetailPage() {
         title={entry.title}
         description={entry.summary}
         aside={
-          <Link className={secondaryButtonClassName} to="/">
-            Back to the interactive road
-          </Link>
+          <div className="flex flex-wrap justify-start gap-3 lg:justify-end">
+            <Link className={secondaryButtonClassName} to="/">
+              Back to the interactive road
+            </Link>
+            <Link className={primaryButtonClassName} to="/contact">
+              Ask about a similar project
+            </Link>
+          </div>
         }
       />
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(280px,0.88fr)]">
         <Reveal delay={0.05}>
-          <Surface className="overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(241,211,160,0.15),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))]">
+          <Surface className="overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(255,255,255,0.74))]">
             <div className="space-y-4">
-              <p className="m-0 text-[0.78rem] uppercase tracking-[0.18em] text-sand-100/48">
-                {chapterLabel} overview
+              <p className="m-0 text-[0.78rem] uppercase tracking-[0.18em] text-sand-100/60">
+                Case study overview
               </p>
-              <span className="inline-flex min-h-9 items-center rounded-full border border-white/10 bg-ink-900/42 px-3 text-xs uppercase tracking-[0.18em] text-sand-100/72">
-                {chapterLabel}{" "}
-                {typeof entry.display_order === "number"
-                  ? String(entry.display_order).padStart(2, "0")
-                  : "Next"}
+              <span className="inline-flex min-h-9 items-center rounded-full border border-sand-200/24 bg-brand-300/14 px-3 text-xs uppercase tracking-[0.18em] text-sand-100">
+                {entry.client_label || chapterLabel}
               </span>
-              <h2 className="max-w-[10ch] font-display text-[clamp(2.8rem,5.2vw,4.8rem)] leading-[0.94] tracking-[-0.04em] text-sand-50">
+              <h2 className="max-w-[10ch] font-display text-[clamp(2.9rem,5.2vw,5rem)] leading-[0.9] tracking-[-0.05em] text-sand-50">
                 {entry.title}
               </h2>
-              <p className="max-w-[34ch] text-base leading-8 text-sand-100/72">
+              <p className="max-w-[38ch] text-base leading-8 text-sand-100">
                 {entry.summary}
               </p>
+              <div className="grid grid-cols-3 gap-2 pt-2">
+                {chapterMetrics.map((metric) => (
+                  <div
+                    key={metric.label}
+                    className="rounded-[18px] border border-sand-200/24 bg-white/80 px-3 py-3"
+                  >
+                    <span className="block text-[0.65rem] uppercase tracking-[0.16em] text-sand-100/60">
+                      {metric.label}
+                    </span>
+                    <strong className="mt-1.5 block text-sm leading-5 text-sand-50">
+                      {metric.value}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+              {entry.focus.length > 0 ? (
+                <div className="flex flex-wrap gap-3 pt-2">
+                  {entry.focus.map((item) => (
+                    <Pill key={item}>{item}</Pill>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </Surface>
         </Reveal>
@@ -109,34 +151,29 @@ function JourneyDetailPage() {
           delay={0.1}
           className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1"
         >
-          <Surface className="bg-ink-900/44 p-5 sm:p-6">
-            <span className="block text-[0.72rem] uppercase tracking-[0.18em] text-sand-100/46">
-              Type
+          <Surface className="bg-white/82 p-5 sm:p-6">
+            <span className="block text-[0.72rem] uppercase tracking-[0.18em] text-sand-100/60">
+              Project type
             </span>
             <strong className="mt-3 block text-3xl text-sand-50">
               {chapterLabel}
             </strong>
           </Surface>
-          <Surface className="bg-ink-900/44 p-5 sm:p-6">
-            <span className="block text-[0.72rem] uppercase tracking-[0.18em] text-sand-100/46">
-              Year
+          <Surface className="bg-white/82 p-5 sm:p-6">
+            <span className="block text-[0.72rem] uppercase tracking-[0.18em] text-sand-100/60">
+              Scope
             </span>
             <strong className="mt-3 block text-3xl text-sand-50">
-              {entry.year}
+              {entry.project_scope || String(entry.year)}
             </strong>
           </Surface>
-          <Surface className="bg-ink-900/44 p-5 sm:p-6">
-            <span className="block text-[0.72rem] uppercase tracking-[0.18em] text-sand-100/46">
-              Accent
+          <Surface className="bg-white/82 p-5 sm:p-6">
+            <span className="block text-[0.72rem] uppercase tracking-[0.18em] text-sand-100/60">
+              Outcome highlight
             </span>
-            <div className="mt-3 flex items-center gap-3">
-              <span
-                className="h-4 w-4 rounded-full shadow-[0_0_0_6px_rgba(244,236,224,0.06)]"
-                aria-hidden="true"
-                style={{ backgroundColor: entry.accent }}
-              />
-              <strong className="text-base text-sand-50">{entry.accent}</strong>
-            </div>
+            <strong className="mt-3 block text-xl leading-8 text-sand-50">
+              {entry.outcome_highlight || entry.summary}
+            </strong>
           </Surface>
         </Reveal>
       </div>
@@ -145,10 +182,10 @@ function JourneyDetailPage() {
         <Reveal delay={0.14}>
           <Surface>
             <Eyebrow>Milestone</Eyebrow>
-            <h3 className="mt-4 font-display text-[clamp(2.2rem,4.2vw,3.8rem)] leading-[0.96] tracking-[-0.04em] text-sand-50">
+            <h3 className="mt-4 font-display text-[clamp(2.2rem,4.2vw,3.8rem)] leading-[0.94] tracking-[-0.05em] text-sand-50">
               {entry.year}
             </h3>
-            <p className="mt-5 max-w-[44ch] text-base leading-8 text-sand-100/70">
+            <p className="mt-5 max-w-[44ch] text-base leading-8 text-sand-100">
               {entry.detail}
             </p>
           </Surface>
@@ -156,12 +193,20 @@ function JourneyDetailPage() {
 
         <Reveal delay={0.18}>
           <Surface>
-            <Eyebrow>Why it mattered</Eyebrow>
-            <ul className="mt-5 space-y-3 pl-5 text-base leading-8 text-sand-100/70">
-              {entry.focus.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+            <Eyebrow>Deliverables and focus</Eyebrow>
+            {entry.deliverables.length > 0 || entry.focus.length > 0 ? (
+              <ul className="mt-5 space-y-3 pl-5 text-base leading-8 text-sand-100">
+                {[...entry.deliverables, ...entry.focus].map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-5 text-base leading-8 text-sand-100">
+                This milestone matters because it sharpened delivery judgment,
+                improved presentation quality, and clarified what kind of work
+                should come next.
+              </p>
+            )}
           </Surface>
         </Reveal>
       </div>
@@ -173,7 +218,7 @@ function JourneyDetailPage() {
             <h3 className="mt-4 font-display text-3xl leading-tight tracking-[-0.03em] text-sand-50">
               What happened in this stage
             </h3>
-            <p className="mt-4 text-base leading-8 text-sand-100/70">
+            <p className="mt-4 text-base leading-8 text-sand-100">
               {entry.detail}
             </p>
           </Surface>
@@ -185,7 +230,7 @@ function JourneyDetailPage() {
             <h3 className="mt-4 font-display text-3xl leading-tight tracking-[-0.03em] text-sand-50">
               How it shaped the direction
             </h3>
-            <p className="mt-4 text-base leading-8 text-sand-100/70">
+            <p className="mt-4 text-base leading-8 text-sand-100">
               {entry.summary}
             </p>
           </Surface>
@@ -197,7 +242,7 @@ function JourneyDetailPage() {
             <h3 className="mt-4 font-display text-3xl leading-tight tracking-[-0.03em] text-sand-50">
               Milestone identity
             </h3>
-            <div className="mt-5 flex items-center gap-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+            <div className="mt-5 flex items-center gap-4 rounded-[22px] border border-sand-200/24 bg-white/80 p-4">
               <span
                 className="h-[18px] w-[18px] rounded-full shadow-[0_0_0_6px_rgba(244,236,224,0.06)]"
                 aria-hidden="true"
@@ -207,10 +252,10 @@ function JourneyDetailPage() {
                 <strong className="block text-base text-sand-50">
                   {entry.slug}
                 </strong>
-                <p className="m-0 text-sm text-sand-100/60">{entry.eyebrow}</p>
+                <p className="m-0 text-sm text-sand-100">{entry.eyebrow}</p>
               </div>
             </div>
-            <p className="mt-5 text-base leading-8 text-sand-100/70">
+            <p className="mt-5 text-base leading-8 text-sand-100">
               This stage ties the broader direction to one recognizable signal
               in the timeline: tone, timing, and the kind of work it unlocked
               next.
@@ -225,7 +270,7 @@ function JourneyDetailPage() {
             Explore the portfolio
           </Link>
           <Link className={secondaryButtonClassName} to="/contact">
-            Book a project conversation
+            Start a project conversation
           </Link>
         </div>
       </Reveal>

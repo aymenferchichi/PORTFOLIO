@@ -5,40 +5,41 @@ module.exports = {
     extend: {
       colors: {
         ink: {
-          950: "#050607",
-          900: "#0b0e10",
-          800: "#111417",
-          700: "#1a1f23",
+          950: "#fffdf8",
+          900: "#f8f1e6",
+          800: "#efe3d2",
+          700: "#e2d2bc",
         },
         sand: {
-          50: "#fcf8f2",
-          100: "#f4ece0",
-          200: "#dccbb4",
+          50: "#1d2a3d",
+          100: "#516178",
+          200: "#93a0b2",
         },
         brand: {
-          100: "#f7dfb4",
-          200: "#f1d3a0",
-          300: "#d58e59",
+          100: "#c98a35",
+          200: "#deb071",
+          300: "#f2d3a2",
         },
         moss: {
-          400: "#6d8f84",
-          500: "#335248",
+          400: "#8bb7b1",
+          500: "#4d8e87",
         },
         mist: {
-          300: "#d7e4f4",
-          400: "#9eb7cf",
+          300: "#dde8f4",
+          400: "#b2c3d9",
         },
       },
       fontFamily: {
-        body: ["Franklin Gothic Regular", "Arial", "sans-serif"],
-        display: ["Franklin Gothic Heavy Regular", "Arial Black", "sans-serif"],
+        body: ["Manrope", "Arial", "sans-serif"],
+        display: ["Sora", "Arial", "sans-serif"],
       },
       boxShadow: {
-        panel: "0 28px 100px rgba(0, 0, 0, 0.28)",
+        panel: "0 24px 70px rgba(28, 36, 52, 0.12)",
+        glow: "0 16px 40px rgba(201, 138, 53, 0.18)",
       },
       backgroundImage: {
         "shell-gradient":
-          "radial-gradient(circle at top left, rgba(214,167,92,0.16), transparent 28%), radial-gradient(circle at 82% 18%, rgba(47,88,73,0.2), transparent 24%), linear-gradient(180deg, #0a0c0d 0%, #111416 40%, #0b0d0e 100%)",
+          "radial-gradient(circle at 10% 10%, rgba(242,211,162,0.48), transparent 28%), radial-gradient(circle at 88% 12%, rgba(141,183,177,0.26), transparent 24%), radial-gradient(circle at 50% 100%, rgba(221,232,244,0.3), transparent 36%), linear-gradient(180deg, #fffdf8 0%, #fbf5ec 44%, #f4ecde 100%)",
       },
     },
   },

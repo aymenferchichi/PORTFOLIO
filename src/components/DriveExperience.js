@@ -742,7 +742,12 @@ function MilestoneCard({
   );
 }
 
-function RoadSignal({ milestone, layout, signalState = "red", detailLevel = 0 }) {
+function RoadSignal({
+  milestone,
+  layout,
+  signalState = "red",
+  detailLevel = 0,
+}) {
   const simplified = detailLevel >= 1;
   const minimal = detailLevel >= 2;
   const signalX = layout.width * 0.5 + 0.52;
@@ -780,11 +785,7 @@ function RoadSignal({ milestone, layout, signalState = "red", detailLevel = 0 })
         />
       </mesh>
 
-      <mesh
-        geometry={unitLampGeometry}
-        position={[0, 0.9, 0.28]}
-        scale={0.21}
-      >
+      <mesh geometry={unitLampGeometry} position={[0, 0.9, 0.28]} scale={0.21}>
         <meshBasicMaterial color={redActive ? "#ff4d43" : "#220606"} />
       </mesh>
 
@@ -798,11 +799,7 @@ function RoadSignal({ milestone, layout, signalState = "red", detailLevel = 0 })
         </mesh>
       ) : null}
 
-      <mesh
-        geometry={unitLampGeometry}
-        position={[0, 0.16, 0.28]}
-        scale={0.21}
-      >
+      <mesh geometry={unitLampGeometry} position={[0, 0.16, 0.28]} scale={0.21}>
         <meshBasicMaterial color={greenActive ? "#4ef06f" : "#071a0a"} />
       </mesh>
 

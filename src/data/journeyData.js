@@ -13,15 +13,24 @@ export const finalJourneyEntry = {
   title: "The next chapter is more selective",
   eyebrow: "Freelance direction",
   subcategory: "experience",
+  client_label: "Future freelance clients",
+  project_scope: "Selective portfolio, landing-page, and website work",
+  outcome_highlight:
+    "The next step is clearer client trust, stronger presentation, and more polished delivery.",
   detail:
-    "The next step is a more focused freelance practice built around premium web presentation, clearer client positioning, and carefully directed digital experiences.",
+    "The next step is a more focused freelance practice built around polished websites, cleaner case studies, and a client experience that feels reliable from first impression to final delivery.",
   accent: "#f3d9a2",
   summary:
-    "The final card points toward a more design-led client offer: stronger case studies, sharper positioning, and selected projects that feel commercially useful as well as visually refined.",
+    "The final card points toward a more focused freelance offer: better case studies, clearer presentation, and selected projects that help future clients trust the work faster.",
   focus: [
-    "Detailed client case studies with stronger before-and-after clarity.",
-    "More selective freelance work across web design, front-end, and creative direction.",
-    "A portfolio that sells trust, craft, and delivery discipline more clearly.",
+    "Detailed case studies with clearer problem, process, and outcome framing.",
+    "Selective work across portfolio websites, landing pages, and client-focused digital experiences.",
+    "A portfolio that presents trust, clarity, and execution reliability more clearly.",
+  ],
+  deliverables: [
+    "Case-study presentation",
+    "UI direction",
+    "Front-end delivery",
   ],
 };
 
@@ -34,7 +43,12 @@ function normalizeJourneyEntry(entry, index) {
     subcategory: entry.subcategory || "experience",
     detail: entry.detail,
     summary: entry.summary,
+    client_label: entry.client_label || "Selected client work",
+    project_scope:
+      entry.project_scope || "Interface design and front-end delivery",
+    outcome_highlight: entry.outcome_highlight || entry.summary,
     focus: Array.isArray(entry.focus) ? entry.focus : [],
+    deliverables: Array.isArray(entry.deliverables) ? entry.deliverables : [],
     accent: entry.accent || "#f0d6a4",
     display_order: entry.display_order ?? index + 1,
   };
