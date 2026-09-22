@@ -23,31 +23,31 @@ const stackItems = [
 
 const serviceCards = [
   {
-    title: "UI / UX",
-    subtitle: "Interfaces that feel cleaner, sharper, and easier to trust.",
+    title: "UI / UX direction",
+    subtitle: "Structure, hierarchy, and decision-making for clearer web experiences.",
     icon: PenTool,
     actionLabel: "See project thinking",
     to: "/about",
   },
   {
-    title: "Full stack development",
-    subtitle: "Design-led front-end work backed by practical implementation.",
+    title: "Web development",
+    subtitle: "React, Django, Shopify, and implementation shaped by delivery realities.",
     icon: CodeXml,
-    actionLabel: "Check projects",
-    to: "/services",
+    actionLabel: "Review selected work",
+    to: "/portfolio",
   },
   {
-    title: "Content direction",
-    subtitle: "Case-study framing, page structure, and clearer presentation.",
+    title: "Delivery leadership",
+    subtitle: "Planning, coordination, and execution across moving parts.",
     icon: Sparkles,
     actionLabel: "View selected work",
     to: "/portfolio",
   },
   {
-    title: "Client delivery",
-    subtitle: "Scope, communication, and execution that stay professional end to end.",
+    title: "Client communication",
+    subtitle: "Direct, structured handling of scope, priorities, and next steps.",
     icon: BriefcaseBusiness,
-    actionLabel: "Start a project",
+    actionLabel: "Start a conversation",
     to: "/contact",
   },
 ];
@@ -60,15 +60,15 @@ const quickLinks = [
     icon: Mail,
   },
   {
-    label: "Services",
-    value: "UI/UX, web design, and front-end delivery",
-    href: "/services",
+    label: "Work with me",
+    value: "Technical delivery, UI/UX, and web execution",
+    href: "/contact",
     icon: BriefcaseBusiness,
     isInternal: true,
   },
   {
     label: "About",
-    value: "How the work is structured and delivered",
+    value: "Background across operations, design, and development",
     href: "/about",
     icon: ArrowUpRight,
     isInternal: true,
@@ -76,9 +76,9 @@ const quickLinks = [
 ];
 
 const profileSignals = [
-  "UI systems",
-  "Front-end craft",
-  "Selected freelance work",
+  "Delivery systems",
+  "UI direction",
+  "Web execution",
 ];
 
 function buildFeaturedProjects(entries) {
@@ -159,45 +159,29 @@ function PortfolioPage() {
           <div className="relative z-10 grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)_220px] lg:items-end">
             <div className="space-y-5 pt-20 lg:flex lg:min-h-[460px] lg:flex-col lg:justify-center lg:pt-20">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#9f8463]">
-                Design-led work
+                Selected work
               </p>
               <div className="space-y-4 text-[#6f5b45]">
                 <p className="m-0 font-display text-[clamp(2.1rem,6vw,3.55rem)] leading-[0.86] tracking-[-0.06em]">
-                  UI/UX
+                  Technical delivery
                 </p>
                 <p className="m-0 max-w-[20ch] text-[0.98rem] leading-8 text-[#8a755e]">
-                  Freelance websites, portfolio systems, and front-end builds shaped for trust.
+                  Web platforms, interfaces, and delivery systems built around clarity.
                 </p>
               </div>
               <div className="space-y-2 border-l border-[#d3c1ab] pl-4 text-[0.92rem] leading-7 text-[#7d6851]">
-                <p className="m-0">Clean visual hierarchy, calm premium tone, and practical build quality.</p>
+                <p className="m-0">Five years across design, development, operations, and client delivery.</p>
               </div>
             </div>
 
             <div className="relative mx-auto w-full max-w-[700px] pt-8 sm:pt-12 lg:-mt-6 lg:pt-14">
               <div className="absolute left-1/2 top-8 h-48 w-48 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,168,123,0.34),transparent_68%)] blur-3xl sm:h-64 sm:w-64" />
-              <div className="absolute left-2 top-20 hidden rounded-[18px] border border-[#ccb79e] bg-[#f4e8d8]/92 px-4 py-3 shadow-[0_16px_36px_rgba(78,60,38,0.12)] sm:block lg:left-4 lg:top-18">
-                <p className="m-0 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#9f8463]">
-                  Role
-                </p>
-                <p className="m-0 mt-1 text-sm text-[#6f5b45]">
-                  Freelance designer developer
-                </p>
-              </div>
               <div className="relative z-10 flex justify-center overflow-hidden pt-1">
                 <img
                   className="-mt-6 mx-auto block h-auto w-full max-w-[520px] object-contain sm:-mt-8 lg:-mt-10 lg:max-w-[570px]"
                   src={process.env.PUBLIC_URL + "/photo.png"}
                   alt="Aymen Ferchichi portrait"
                 />
-              </div>
-              <div className="absolute bottom-6 right-2 rounded-[20px] border border-[#ccb79e] bg-[#f1e4d2]/92 px-4 py-3 shadow-[0_16px_36px_rgba(78,60,38,0.12)] sm:right-6 lg:bottom-8 lg:right-0">
-                <p className="m-0 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#9f8463]">
-                  Focus
-                </p>
-                <p className="m-0 mt-1 text-sm text-[#6f5b45]">
-                  Clear interfaces and polished delivery
-                </p>
               </div>
             </div>
 
@@ -207,10 +191,10 @@ function PortfolioPage() {
               </p>
               <div className="space-y-4 text-[#6f5b45]">
                 <p className="m-0 font-display text-[clamp(2.1rem,6vw,3.55rem)] leading-[0.86] tracking-[-0.06em]">
-                  Front-end
+                  UI/UX lead
                 </p>
                 <p className="m-0 ml-auto max-w-[22ch] text-[0.98rem] leading-8 text-[#8a755e]">
-                  Designer and builder creating client-facing experiences that feel premium and dependable.
+                  Technical delivery manager with hands-on full-stack and interface experience.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 lg:justify-end">
@@ -228,14 +212,14 @@ function PortfolioPage() {
 
           <div className="relative z-10 mt-6 grid gap-5 border-t border-[#dfcfbc] pt-5 md:grid-cols-[1.1fr_0.9fr]">
             <p className="m-0 max-w-[50ch] text-[0.96rem] leading-8 text-[#7d6851]">
-              A light editorial portfolio built around selected freelance work, interface direction, and the implementation detail that makes the final result feel considered.
+              A minimal portfolio built around selected work, delivery thinking, and the systems behind execution.
             </p>
             <div className="flex items-center gap-3 md:justify-end">
               <Link
                 className="inline-flex items-center gap-2 rounded-full border border-[#cdb79d] bg-white/55 px-5 py-2.5 text-[0.92rem] font-medium text-[#6a543f] transition hover:bg-white/75"
                 to="/contact"
               >
-                Start a project
+                Start a conversation
                 <ArrowUpRight size={16} />
               </Link>
             </div>
@@ -394,7 +378,7 @@ function PortfolioPage() {
                         <div className="space-y-4">
                           <Icon size={30} className="text-[#8b6f50]" />
                           <p className="m-0 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#9f8463]">
-                            Service
+                            Focus
                           </p>
                           <h3 className={`m-0 font-display tracking-[-0.06em] ${index === 0 ? "text-[clamp(3.2rem,8vw,5.2rem)] leading-[0.82]" : "text-[clamp(2.15rem,5vw,3.1rem)] leading-[0.9]"}`}>
                             {card.title}
@@ -427,7 +411,7 @@ function PortfolioPage() {
                         <div className="space-y-4">
                           <Icon size={28} className="text-[#8b6f50]" />
                           <p className="m-0 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#9f8463]">
-                            Service
+                            Focus
                           </p>
                           <h3 className="m-0 font-display text-[clamp(2.15rem,4vw,3.1rem)] leading-[0.9] tracking-[-0.06em]">
                             {card.title}
@@ -449,7 +433,7 @@ function PortfolioPage() {
 
             <div className="hidden lg:flex justify-center">
               <span className="font-display text-[4.6rem] leading-none tracking-[-0.08em] text-[#d7c8b7] [writing-mode:vertical-rl]">
-                SERVICES
+                CAPABILITIES
               </span>
             </div>
           </div>

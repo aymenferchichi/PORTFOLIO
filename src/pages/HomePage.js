@@ -415,8 +415,7 @@ function HomePage() {
                 Interactive portfolio
               </Eyebrow>
               <p className="mb-0 mt-3 max-w-[30ch] font-display leading-[1.35] tracking-[-0.03em] text-white">
-                Design-led freelance work, selected client chapters, and the
-                thinking behind them.
+                Technical delivery, UI/UX direction, and selected web work.
               </p>
             </motion.div>
 
@@ -453,9 +452,8 @@ function HomePage() {
 
                 <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:gap-4 sm:pt-5">
                   <p className="m-0 text-sm leading-6 text-white sm:text-base sm:leading-8">
-                    Each stop marks a chapter in the work: sharper interface
-                    decisions, cleaner presentation, and more reliable
-                    client-facing delivery.
+                    Each stop marks a chapter in the work: interface decisions,
+                    delivery systems, and execution across real teams.
                   </p>
                   <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
                     <div className="rounded-[20px] border border-white/8 bg-white/[0.04] p-3 sm:rounded-[24px] sm:p-4">
@@ -471,7 +469,7 @@ function HomePage() {
                         Focus
                       </span>
                       <strong className="mt-1.5 block text-sm leading-5 text-white sm:mt-2 sm:text-lg sm:leading-7">
-                        Clear presentation, trustworthy detail, and polished
+                        Product clarity, delivery discipline, and reliable
                         execution
                       </strong>
                     </div>

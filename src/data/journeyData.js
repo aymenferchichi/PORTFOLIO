@@ -11,26 +11,26 @@ export const finalJourneyEntry = {
   slug: "next-chapter",
   year: "Next",
   title: "The next chapter is more selective",
-  eyebrow: "Freelance direction",
+  eyebrow: "Technical delivery",
   subcategory: "experience",
-  client_label: "Future freelance clients",
-  project_scope: "Selective portfolio, landing-page, and website work",
+  client_label: "Selected teams and clients",
+  project_scope: "Web delivery, UI/UX direction, and technical coordination",
   outcome_highlight:
-    "The next step is clearer client trust, stronger presentation, and more polished delivery.",
+    "The next step is more focused work across product, delivery, and interface quality.",
   detail:
-    "The next step is a more focused freelance practice built around polished websites, cleaner case studies, and a client experience that feels reliable from first impression to final delivery.",
+    "The next step is a more selective body of work built around technical delivery leadership, stronger case studies, and clearer proof across design and execution.",
   accent: "#f3d9a2",
   summary:
-    "The final card points toward a more focused freelance offer: better case studies, clearer presentation, and selected projects that help future clients trust the work faster.",
+    "The final card points toward a more focused portfolio: better case studies, stronger delivery proof, and selected work that shows how design and execution connect.",
   focus: [
     "Detailed case studies with clearer problem, process, and outcome framing.",
-    "Selective work across portfolio websites, landing pages, and client-focused digital experiences.",
+    "Selective work across product interfaces, web delivery, and operational support.",
     "A portfolio that presents trust, clarity, and execution reliability more clearly.",
   ],
   deliverables: [
-    "Case-study presentation",
-    "UI direction",
-    "Front-end delivery",
+    "Case studies",
+    "Delivery leadership",
+    "Web execution",
   ],
 };
 

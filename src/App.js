@@ -4,6 +4,7 @@ import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   BrowserRouter,
+  Navigate,
   NavLink,
   Route,
   Routes,
@@ -15,12 +16,10 @@ import ContactPage from "./pages/ContactPage";
 import HomePage from "./pages/HomePage";
 import JourneyDetailPage from "./pages/JourneyDetailPage";
 import PortfolioPage from "./pages/PortfolioPage";
-import ServicesPage from "./pages/ServicesPage";
 
 const navigationItems = [
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
-  { label: "Services", to: "/services" },
   { label: "Portfolio", to: "/portfolio" },
   { label: "Contact", to: "/contact" },
 ];
@@ -194,7 +193,7 @@ function AppLayout() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services" element={<Navigate to="/contact" replace />} />
             <Route path="/journey/:slug" element={<JourneyDetailPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/contact" element={<ContactPage />} />
